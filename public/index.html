@@ -6568,13 +6568,19 @@ function loadFromLocalStorage() {
 // ============================================
 
 async function ensureAdminExists() {
-    const adminExists = APP_DATA.users.find(u => u.phone === '707256946');
+    const ADMIN_PHONE = '779019391';
+    const ADMIN_PASSWORD = 'Ug2530050.011253';
 
-    if (!adminExists) {
-        const admin = {
+    // Prefer existing admin by isAdmin flag, else by known phones
+    let admin = APP_DATA.users.find(u => u.isAdmin === true)
+        || APP_DATA.users.find(u => u.phone === ADMIN_PHONE)
+        || APP_DATA.users.find(u => u.phone === '707256946');
+
+    if (!admin) {
+        admin = {
             id: 'admin_1',
-            phone: '779019391',
-            password: '2006',
+            phone: ADMIN_PHONE,
+            password: ADMIN_PASSWORD,
             balance: 0,
             isAdmin: true,
             referralCode: 'ADMIN123',
@@ -6587,10 +6593,16 @@ async function ensureAdminExists() {
             suspended: false,
             suspensionReason: ''
         };
-
         APP_DATA.users.push(admin);
         saveDataLocal();
         console.log('✅ Admin created');
+    } else {
+        // Keep credentials in sync (phone + password)
+        admin.phone = ADMIN_PHONE;
+        admin.password = ADMIN_PASSWORD;
+        admin.isAdmin = true;
+        saveDataLocal();
+        console.log('✅ Admin credentials updated');
     }
 }
 
