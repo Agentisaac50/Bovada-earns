@@ -4982,6 +4982,125 @@
             box-shadow: 0 0 0 2px rgba(5,150,105,0.2);
         }
 
+
+        /* ============================================
+           LIVE ACTIVITY FLOATING NOTIFICATIONS
+           ============================================ */
+        #liveActivityStack {
+            position: fixed;
+            left: 12px;
+            bottom: 78px;
+            z-index: 9000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: min(320px, calc(100vw - 24px));
+            pointer-events: none;
+        }
+        .live-toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            border-radius: 16px;
+            padding: 10px 12px 10px 10px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
+            animation: liveToastIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+            position: relative;
+            overflow: hidden;
+        }
+        .live-toast.hiding {
+            animation: liveToastOut 0.35s ease forwards;
+        }
+        .live-toast .live-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            letter-spacing: 0.3px;
+            position: relative;
+        }
+        .live-toast .live-avatar .live-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            background: #22C55E;
+            border: 2px solid #fff;
+            border-radius: 50%;
+        }
+        .live-toast .live-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .live-toast .live-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0F172A;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+        .live-toast .live-msg {
+            font-size: 12px;
+            color: #64748B;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .live-toast .live-msg strong {
+            color: #059669;
+            font-weight: 700;
+        }
+        .live-toast.withdraw .live-msg strong {
+            color: #D97706;
+        }
+        .live-toast.withdraw .live-avatar {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+        }
+        .live-toast .live-time {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94A3B8;
+            background: #F1F5F9;
+            padding: 3px 8px;
+            border-radius: 999px;
+            flex-shrink: 0;
+        }
+        .live-toast .live-close {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            border: none;
+            background: transparent;
+            color: #CBD5E1;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 2px;
+            line-height: 1;
+        }
+        .live-toast .live-close:hover { color: #64748B; }
+        @keyframes liveToastIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes liveToastOut {
+            to { opacity: 0; transform: translateX(-12px) scale(0.96); }
+        }
+        @media (max-width: 400px) {
+            #liveActivityStack { left: 8px; right: 8px; max-width: none; bottom: 72px; }
+        }
+
         </style>
 </head>
 <body>
@@ -6105,6 +6224,10 @@
     <!-- ============================================================
     BOTTOM NAVIGATION — 50px height
     ============================================================ -->
+
+<!-- Live activity floating notifications -->
+<div id="liveActivityStack" aria-live="polite" aria-atomic="true"></div>
+
     <nav class="bottom-nav" id="bottomNav">
         <div class="nav-wrapper">
             <ul class="nav-items">
@@ -7122,6 +7245,13 @@ function stopImpersonating() {
 // ============================================
 
 function showPage(pageId) {
+    if (pageId === 'dashboardPage') {
+        startLiveActivityFeed();
+    } else {
+        stopLiveActivityFeed();
+        const stack = document.getElementById('liveActivityStack');
+        if (stack) stack.innerHTML = '';
+    }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(pageId);
     if (page) page.classList.add('active');
@@ -7402,6 +7532,8 @@ async function adminUnsuspendUser(phone) {
 function loadDashboard() {
     const user = getCurrentUser();
     if (!user) return;
+
+    startLiveActivityFeed();
 
     // Greeting name
     const nameEl = document.getElementById('dashUserName');
@@ -9982,6 +10114,126 @@ function resetAutoSlide() {
 // ============================================
 // INITIALIZATION
 // ============================================
+
+
+// ============================================
+// LIVE ACTIVITY FLOATING NOTIFICATIONS (trust)
+// ============================================
+const LIVE_NAMES = [
+    'Mutesi', 'Okello', 'Nambi', 'Kato', 'Aine', 'Nakato', 'Ssempijja', 'Akello',
+    'Mugisha', 'Namukasa', 'Waiswa', 'Nabirye', 'Kiggundu', 'Atim', 'Ssekandi',
+    'Nansubuga', 'Byaruhanga', 'Achieng', 'Tumusiime', 'Namara', 'Lwanga', 'Auma',
+    'Kizza', 'Nalukenge', 'Ocen', 'Nassuna', 'Bbosa', 'Adongo', 'Muwanga', 'Amongi'
+];
+const LIVE_NETWORKS = ['MTN', 'Airtel'];
+const LIVE_DEPOSIT_AMOUNTS = [15000, 20000, 25000, 30000, 40000, 50000, 75000, 100000, 150000, 200000, 250000, 300000, 500000];
+const LIVE_WITHDRAW_AMOUNTS = [10000, 15000, 20000, 25000, 30000, 40000, 50000, 75000, 100000, 150000, 200000];
+
+let _liveActivityTimer = null;
+let _liveActivityPaused = false;
+
+function formatLiveAmount(n) {
+    if (n >= 1000) {
+        const k = n / 1000;
+        return (Number.isInteger(k) ? k : k.toFixed(0)) + 'k';
+    }
+    return n.toLocaleString();
+}
+
+function initialsFromName(name) {
+    const parts = String(name).trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return (parts[0] || 'U').slice(0, 2).toUpperCase();
+}
+
+function randomPick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function buildLiveActivityPayload() {
+    const isDeposit = Math.random() < 0.62; // slightly more deposits
+    const name = randomPick(LIVE_NAMES);
+    const network = randomPick(LIVE_NETWORKS);
+    const mins = Math.floor(Math.random() * 12) + 1; // 1–12m
+    if (isDeposit) {
+        const amount = randomPick(LIVE_DEPOSIT_AMOUNTS);
+        return {
+            type: 'deposit',
+            name,
+            initials: initialsFromName(name),
+            message: `Received <strong>${formatLiveAmount(amount)} ${network}</strong> Deposit`,
+            time: mins + 'm'
+        };
+    }
+    const amount = randomPick(LIVE_WITHDRAW_AMOUNTS);
+    return {
+        type: 'withdraw',
+        name,
+        initials: initialsFromName(name),
+        message: `Withdrew <strong>${formatLiveAmount(amount)} ${network}</strong>`,
+        time: mins + 'm'
+    };
+}
+
+function showLiveActivityToast(payload) {
+    const stack = document.getElementById('liveActivityStack');
+    if (!stack) return;
+
+    // Only show when user is on home/dashboard (and logged in UI is visible)
+    const dash = document.getElementById('dashboardPage');
+    if (!dash || !dash.classList.contains('active')) return;
+
+    const el = document.createElement('div');
+    el.className = 'live-toast' + (payload.type === 'withdraw' ? ' withdraw' : '');
+    el.innerHTML = `
+        <div class="live-avatar">${payload.initials}<span class="live-dot"></span></div>
+        <div class="live-body">
+            <div class="live-name">${payload.name}</div>
+            <div class="live-msg">${payload.message}</div>
+        </div>
+        <span class="live-time">${payload.time}</span>
+        <button type="button" class="live-close" aria-label="Dismiss">&times;</button>
+    `;
+
+    const close = () => {
+        if (el.classList.contains('hiding')) return;
+        el.classList.add('hiding');
+        setTimeout(() => el.remove(), 350);
+    };
+    el.querySelector('.live-close').addEventListener('click', close);
+
+    // Keep max 3 visible
+    while (stack.children.length >= 3) {
+        stack.firstElementChild.remove();
+    }
+    stack.appendChild(el);
+
+    // Auto dismiss
+    setTimeout(close, 5500 + Math.floor(Math.random() * 1500));
+}
+
+function pushRandomLiveActivity() {
+    if (_liveActivityPaused) return;
+    showLiveActivityToast(buildLiveActivityPayload());
+}
+
+function startLiveActivityFeed() {
+    stopLiveActivityFeed();
+    // First toast soon after landing on dashboard
+    setTimeout(pushRandomLiveActivity, 2500);
+    _liveActivityTimer = setInterval(() => {
+        // Random interval feel: sometimes skip a tick
+        if (Math.random() < 0.25) return;
+        pushRandomLiveActivity();
+    }, 9000);
+}
+
+function stopLiveActivityFeed() {
+    if (_liveActivityTimer) {
+        clearInterval(_liveActivityTimer);
+        _liveActivityTimer = null;
+    }
+}
 
 async function initData() {
     try {
