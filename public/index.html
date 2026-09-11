@@ -5203,18 +5203,25 @@
                     <label>Phone Number <span class="req">*</span></label>
                     <div class="signup-phone-wrap">
                         <span class="signup-cc">+256</span>
-                        <input type="tel" id="loginPhone" placeholder="e.g., 0771234567" />
+                        <input type="tel" id="loginPhone" name="username" autocomplete="username" placeholder="e.g., 0771234567" />
                     </div>
                 </div>
 
                 <div class="signup-field">
                     <label>Password <span class="req">*</span></label>
                     <div class="signup-pass-wrap">
-                        <input type="password" id="loginPassword" placeholder="Enter your password" />
+                        <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="Enter your password" />
                         <button type="button" class="signup-eye" onclick="togglePassword('loginPassword')">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
+                </div>
+
+                <div class="signup-field" style="margin-bottom: 10px;">
+                    <label style="display:flex;align-items:center;gap:10px;font-weight:500;cursor:pointer;user-select:none;">
+                        <input type="checkbox" id="rememberLogin" checked style="width:18px;height:18px;accent-color:#059669;cursor:pointer;" />
+                        <span>Remember phone &amp; password</span>
+                    </label>
                 </div>
 
                 <button type="button" class="signup-btn" onclick="handleLogin()">
@@ -6944,6 +6951,7 @@ function showAuthTab(tab) {
     if (page) page.classList.add('active');
     const nav = document.getElementById('bottomNav');
     if (nav) nav.style.display = 'none';
+    if (tab === 'login') loadSavedLoginCredentials();
 }
 
 function togglePassword(inputId) {
@@ -7109,6 +7117,37 @@ async function handleRegister() {
 // HANDLE LOGIN
 // ============================================
 
+
+// ============================================
+// SAVED LOGIN CREDENTIALS (browser)
+// ============================================
+function loadSavedLoginCredentials() {
+    try {
+        const remember = localStorage.getItem('rememberLogin');
+        const phone = localStorage.getItem('savedLoginPhone') || '';
+        const password = localStorage.getItem('savedLoginPassword') || '';
+        const phoneEl = document.getElementById('loginPhone');
+        const passEl = document.getElementById('loginPassword');
+        const rememberEl = document.getElementById('rememberLogin');
+
+        if (rememberEl) {
+            rememberEl.checked = remember !== '0';
+        }
+        if (phoneEl && phone) phoneEl.value = phone;
+        if (passEl && password && remember !== '0') passEl.value = password;
+    } catch (e) {
+        console.warn('Could not load saved login credentials', e);
+    }
+}
+
+function clearSavedLoginCredentials() {
+    localStorage.removeItem('savedLoginPhone');
+    localStorage.removeItem('savedLoginPassword');
+    localStorage.setItem('rememberLogin', '0');
+    const rememberEl = document.getElementById('rememberLogin');
+    if (rememberEl) rememberEl.checked = false;
+}
+
 function handleLogin() {
     const phone = document.getElementById('loginPhone').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -7137,6 +7176,20 @@ function handleLogin() {
     }
 
     localStorage.setItem('currentUser', JSON.stringify(user));
+
+    // Save credentials for easy re-login
+    const rememberEl = document.getElementById('rememberLogin');
+    const remember = rememberEl ? rememberEl.checked : true;
+    if (remember) {
+        localStorage.setItem('savedLoginPhone', phone);
+        localStorage.setItem('savedLoginPassword', password);
+        localStorage.setItem('rememberLogin', '1');
+    } else {
+        localStorage.removeItem('savedLoginPhone');
+        localStorage.removeItem('savedLoginPassword');
+        localStorage.setItem('rememberLogin', '0');
+    }
+
     errorEl.style.display = 'none';
     showApp(user);
 }
@@ -10284,10 +10337,12 @@ async function initData() {
                 localStorage.removeItem('currentUser');
                 document.getElementById('bottomNav').style.display = 'none';
                 document.getElementById('loginPage').classList.add('active');
+                loadSavedLoginCredentials();
             }
         } else {
             document.getElementById('bottomNav').style.display = 'none';
             document.getElementById('loginPage').classList.add('active');
+            loadSavedLoginCredentials();
         }
 
         setTimeout(initSlideshow, 500);
@@ -10311,7 +10366,10 @@ async function initData() {
 }
 
 console.log('⚡ Starting Bovada Earns...');
-document.addEventListener('DOMContentLoaded', initData);
+document.addEventListener('DOMContentLoaded', () => {
+    initData();
+    setTimeout(loadSavedLoginCredentials, 300);
+});
 </script>
 
 </body>
