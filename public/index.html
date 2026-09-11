@@ -5028,11 +5028,11 @@
                     </div>
                     <div class="info-item animate-fade-in-up hover-lift">
                         <div class="label"><i class="fas fa-bolt" style="color:#ff4757;"></i> Min Withdrawal</div>
-                        <div class="value red">UGX 10,000</div>
+                        <div class="value red">UGX 5,000</div>
                     </div>
                     <div class="info-item animate-fade-in-up hover-lift">
                         <div class="label"><i class="fas fa-percent" style="color:#f39c12;"></i> Withdrawal Fee</div>
-                        <div class="value gold">5%</div>
+                        <div class="value gold">3%</div>
                     </div>
                     <div class="info-item animate-fade-in-up hover-lift">
                         <div class="label"><i class="fas fa-headset" style="color:#3498db;"></i> Service Hours</div>
@@ -5677,17 +5677,18 @@
                 <!-- Withdraw Amount -->
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                     <label style="font-size:14px;font-weight:600;color:#0F172A;margin:0;">Withdraw Amount</label>
-                    <span style="font-size:12px;color:#94A3B8;">Min: 10,000 UGX</span>
+                    <span style="font-size:12px;color:#94A3B8;">Min: 5,000 UGX</span>
                 </div>
                 <div style="display:flex;align-items:stretch;border:1.5px solid #E2E8F0;border-radius:12px;overflow:hidden;background:#FFFFFF;margin-bottom:16px;">
                     <span style="display:flex;align-items:center;padding:0 16px;background:#F8FAFC;color:#64748B;font-weight:700;font-size:14px;border-right:1px solid #E2E8F0;">UGX</span>
-                    <input type="number" id="withdrawAmount" placeholder="e.g. 20000" min="10000" oninput="updateWithdrawPreview()"
+                    <input type="number" id="withdrawAmount" placeholder="e.g. 20000" min="5000" oninput="updateWithdrawPreview()"
                         style="flex:1;border:none;outline:none;padding:14px 16px;font-size:16px;font-weight:500;color:#0F172A;background:#FFFFFF;" />
                 </div>
 
                 <!-- Quick Select -->
                 <div style="font-size:13px;color:#64748B;margin-bottom:10px;">Quick Select:</div>
                 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+                    <button type="button" onclick="setWithdrawAmount(5000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">5,000</button>
                     <button type="button" onclick="setWithdrawAmount(10000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">10,000</button>
                     <button type="button" onclick="setWithdrawAmount(20000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">20,000</button>
                     <button type="button" onclick="setWithdrawAmount(50000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">50,000</button>
@@ -5698,7 +5699,7 @@
                 <!-- Fee row -->
                 <div id="withdrawFeeRow" style="background:#F8FAFC;border-radius:12px;padding:12px 14px;margin-bottom:16px;">
                     <div style="display:flex;justify-content:space-between;font-size:13px;color:#64748B;padding:3px 0;">
-                        <span>Fee (5%)</span><span id="withdrawFeeDisplay">UGX 0</span>
+                        <span>Fee (9%)</span><span id="withdrawFeeDisplay">UGX 0</span>
                     </div>
                     <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#059669;padding:3px 0;margin-top:4px;border-top:1px dashed #E2E8F0;padding-top:8px;">
                         <span>You receive</span><span id="youReceiveDisplay">UGX 0</span>
@@ -6182,112 +6183,112 @@ const BIKES = [
         id: 1, 
         name: 'AI Cruiser X1', 
         price: 25000, 
-        dailyReturn: 5000, 
+        dailyReturn: 2500, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Cruiser',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/2478b72e-633c-464a-9f97-88d491602e28.png',
         emoji: '🏍️',
         rented: false,
-        totalPayout: 225000,
+        totalPayout: 112500,
         description: 'AI-powered electric cruiser with smart navigation and auto-pilot'
     },
     { 
         id: 2, 
         name: 'AI Sport S2', 
         price: 50000, 
-        dailyReturn: 10000, 
+        dailyReturn: 5000, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Sport',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/95ed8ecd-46bd-4ddd-9bf9-01304cc183f4.png',
         emoji: '🏍️',
         rented: false,
-        totalPayout: 450000,
+        totalPayout: 225000,
         description: 'High-performance AI sport bike with adaptive suspension and AI traction control'
     },
     { 
         id: 3, 
         name: 'AI Adventure A3', 
         price: 100000, 
-        dailyReturn: 20000, 
+        dailyReturn: 10000, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Adventure',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/1eb1bb88-be8d-4b69-93ad-bffdd9c95b0b.png',
         emoji: '🏍️',
         rented: false,
-        totalPayout: 900000,
+        totalPayout: 450000,
         description: 'AI adventure bike with off-road capabilities and terrain-adaptive AI'
     },
     { 
         id: 4, 
         name: 'AI Commuter C4', 
         price: 150000, 
-        dailyReturn: 30000, 
+        dailyReturn: 15000, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Commuter',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/1fece580-f6b0-4dec-a227-c8c6e8d9beb3.png',
         emoji: '🏍️',
         rented: false,
-        totalPayout: 1350000,
+        totalPayout: 675000,
         description: 'Smart AI commuter bike with traffic optimization and voice control'
     },
     { 
         id: 5, 
         name: 'AI Performance P5', 
         price: 250000, 
-        dailyReturn: 50000, 
+        dailyReturn: 25000, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Performance',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/fd0fe14e-a1b9-4dbc-9972-b7969c87d873.png',
         emoji: '🏍️',
         rented: false,
-        totalPayout: 2250000,
+        totalPayout: 1125000,
         description: 'Ultimate AI performance bike with predictive analytics and race mode'
     },
     { 
         id: 6, 
         name: 'AI Luxury L6', 
         price: 500000, 
-        dailyReturn: 100000, 
+        dailyReturn: 55000, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Luxury',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/923cf835-de8d-4e44-bf2c-90eb4b885c47.png',
         emoji: '👑',
         rented: false,
-        totalPayout: 4500000,
+        totalPayout: 2475000,
         description: 'AI luxury bike with autonomous driving, premium comfort, and AI concierge'
     },
     { 
         id: 7, 
         name: 'AI Titan T7', 
         price: 1000000, 
-        dailyReturn: 200000, 
+        dailyReturn: 100000, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Titan',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/e9e8e623-db0d-40ab-ab03-82d0c1cb5e6c.png',
         emoji: '🏯',
         rented: false,
-        totalPayout: 9000000,
+        totalPayout: 4500000,
         description: 'AI titan bike with AI-powered safety systems and autonomous fleet management'
     },
     { 
         id: 8, 
         name: 'AI Phantom P8', 
         price: 2500000, 
-        dailyReturn: 500000, 
+        dailyReturn: 250000, 
         days: 45, 
         location: 'Kampala, Uganda',
         type: 'Electric Phantom',
         image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/9b243543-9478-40a7-82a7-0ba83715aa6d.png',
         emoji: '👑',
         rented: false,
-        totalPayout: 22500000,
+        totalPayout: 11250000,
         description: 'Ultimate AI phantom bike with quantum AI, holographic display, and AI Butler'
     }
 ];
@@ -6449,8 +6450,8 @@ async function ensureAdminExists() {
     if (!adminExists) {
         const admin = {
             id: 'admin_1',
-            phone: '707256946',
-            password: '2005',
+            phone: '779019391',
+            password: '2006',
             balance: 0,
             isAdmin: true,
             referralCode: 'ADMIN123',
@@ -7827,7 +7828,7 @@ function loadReferralPage() {
 
     const code = user.referralCode || '—';
     document.getElementById('refCode').textContent = code;
-    document.getElementById('refLink').textContent = `https://futureaibikes.com/?ref=${code}`;
+    document.getElementById('refLink').textContent = `https://bovada-earns.top/?ref=${code}`;
 
     const referrals = APP_DATA.referrals.filter(r => r.referrerPhone === user.phone && r.level === 1);
     document.getElementById('totalReferrals').textContent = referrals.length;
