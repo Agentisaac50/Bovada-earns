@@ -8025,7 +8025,7 @@ function loadReferralPage() {
 
     const code = user.referralCode || '—';
     document.getElementById('refCode').textContent = code;
-    document.getElementById('refLink').textContent = `https://bovada-earns.top/?ref=${code}`;
+    document.getElementById('refLink').textContent = `https://bovada-earns.onrender.com/?ref=${code}`;
 
     const referrals = APP_DATA.referrals.filter(r => r.referrerPhone === user.phone && r.level === 1);
     document.getElementById('totalReferrals').textContent = referrals.length;
