@@ -5261,9 +5261,20 @@
 
             <div class="signup-form">
                 <div class="signup-field">
+                    <label>Country <span class="req">*</span></label>
+                    <select id="registerCountry" class="signup-input" onchange="onRegisterCountryChange()" style="width:100%;padding:13px 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;font-size:15px;color:#1E293B;">
+                        <option value="UG">🇺🇬 Uganda (UGX)</option>
+                        <option value="KE">🇰🇪 Kenya (KES)</option>
+                        <option value="RW">🇷🇼 Rwanda (RWF)</option>
+                        <option value="CD">🇨🇩 DRC Congo (CDF)</option>
+                    </select>
+                    <p style="font-size:12px;color:#64748B;margin:6px 0 0;">Your balances and package prices will show in your local currency.</p>
+                </div>
+
+                <div class="signup-field">
                     <label>Phone Number <span class="req">*</span></label>
                     <div class="signup-phone-wrap">
-                        <span class="signup-cc">+256</span>
+                        <span class="signup-cc" id="registerDialCode">+256</span>
                         <input type="tel" id="registerPhone" placeholder="e.g., 0771234567" />
                     </div>
                 </div>
@@ -5688,50 +5699,57 @@
 
             <div id="depositStep1">
                 <div style="background:#FFFFFF;border-radius:16px;padding:20px;border:1px solid #F1F5F9;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+                    <!-- Country -->
+                    <div style="margin-bottom:14px;">
+                        <label style="font-size:14px;font-weight:600;color:#0F172A;display:block;margin-bottom:8px;">Country / Market</label>
+                        <div id="depCountryRow" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                            <button type="button" class="dep-country-btn active" data-country="UG" onclick="selectDepositCountry('UG')" style="padding:12px 10px;border:1.5px solid #10B981;border-radius:12px;background:#ECFDF5;color:#059669;font-weight:700;font-size:13px;cursor:pointer;">🇺🇬 Uganda</button>
+                            <button type="button" class="dep-country-btn" data-country="KE" onclick="selectDepositCountry('KE')" style="padding:12px 10px;border:1.5px solid #E2E8F0;border-radius:12px;background:#fff;color:#475569;font-weight:700;font-size:13px;cursor:pointer;">🇰🇪 Kenya</button>
+                            <button type="button" class="dep-country-btn" data-country="RW" onclick="selectDepositCountry('RW')" style="padding:12px 10px;border:1.5px solid #E2E8F0;border-radius:12px;background:#fff;color:#475569;font-weight:700;font-size:13px;cursor:pointer;">🇷🇼 Rwanda</button>
+                            <button type="button" class="dep-country-btn" data-country="CD" onclick="selectDepositCountry('CD')" style="padding:12px 10px;border:1.5px solid #E2E8F0;border-radius:12px;background:#fff;color:#475569;font-weight:700;font-size:13px;cursor:pointer;">🇨🇩 DRC Congo</button>
+                        </div>
+                        <p id="depCountryHint" style="font-size:12px;color:#64748B;margin:8px 0 0;line-height:1.4;">MTN &amp; Airtel Money · Currency: UGX</p>
+                    </div>
+
                     <!-- Deposit Amount -->
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <label style="font-size:14px;font-weight:600;color:#0F172A;margin:0;">Deposit Amount</label>
-                        <span style="font-size:12px;color:#94A3B8;">Min: 10,000 UGX</span>
+                        <label style="font-size:14px;font-weight:600;color:#0F172A;margin:0;">Amount to Pay</label>
+                        <span style="font-size:12px;color:#94A3B8;" id="depMinLabel">Min: 10,000 UGX</span>
                     </div>
-                    <div style="display:flex;align-items:stretch;border:1.5px solid #E2E8F0;border-radius:12px;overflow:hidden;background:#FFFFFF;margin-bottom:16px;">
-                        <span style="display:flex;align-items:center;padding:0 16px;background:#F8FAFC;color:#64748B;font-weight:700;font-size:14px;border-right:1px solid #E2E8F0;">UGX</span>
-                        <input type="number" id="depositAmount" placeholder="e.g. 50000" min="10000" step="1000" oninput="updateDepositFeePreview()"
+                    <div style="display:flex;align-items:stretch;border:1.5px solid #E2E8F0;border-radius:12px;overflow:hidden;background:#FFFFFF;margin-bottom:8px;">
+                        <span id="depCurrencyLabel" style="display:flex;align-items:center;padding:0 16px;background:#F8FAFC;color:#64748B;font-weight:700;font-size:14px;border-right:1px solid #E2E8F0;">UGX</span>
+                        <input type="number" id="depositAmount" placeholder="e.g. 50000" min="1000" step="100" oninput="updateDepositFeePreview()"
                             style="flex:1;border:none;outline:none;padding:14px 16px;font-size:16px;font-weight:500;color:#0F172A;background:#FFFFFF;" />
                     </div>
+                    <p id="depUgxCreditHint" style="font-size:12px;color:#059669;font-weight:600;margin:0 0 14px;">Account credit ≈ UGX 0</p>
 
                     <!-- Quick Select -->
                     <div style="font-size:13px;color:#64748B;margin-bottom:10px;">Quick Select:</div>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
-                        <button type="button" onclick="setDepositAmount(10000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">10,000</button>
-                        <button type="button" onclick="setDepositAmount(20000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">20,000</button>
-                        <button type="button" onclick="setDepositAmount(30000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">30,000</button>
-                        <button type="button" onclick="setDepositAmount(50000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">50,000</button>
-                        <button type="button" onclick="setDepositAmount(100000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">100,000</button>
-                        <button type="button" onclick="setDepositAmount(200000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">200,000</button>
-                        <button type="button" onclick="setDepositAmount(500000)" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">500,000</button>
-                    </div>
+                    <div id="depQuickAmounts" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;"></div>
 
                     <!-- Fee preview -->
                     <div id="depositFeePreview" style="display:none;background:#F8FAFC;border-radius:12px;padding:12px 14px;margin-bottom:16px;">
-                        <div style="display:flex;justify-content:space-between;font-size:13px;color:#64748B;padding:3px 0;"><span>You Pay</span><span id="previewPay">UGX 0</span></div>
-                        <div style="display:flex;justify-content:space-between;font-size:13px;color:#64748B;padding:3px 0;"><span>Fee (5%)</span><span id="previewFee">UGX 0</span></div>
-                        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#059669;padding:3px 0;margin-top:4px;border-top:1px dashed #E2E8F0;padding-top:8px;"><span>Net Credit</span><span id="previewNet">UGX 0</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:13px;color:#64748B;padding:4px 0;"><span>You pay</span><span id="previewPay">—</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:13px;color:#64748B;padding:4px 0;"><span>Fee (~5%)</span><span id="previewFee">—</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#059669;padding:8px 0 4px;border-top:1px dashed #E2E8F0;margin-top:4px;"><span>Credited (UGX)</span><span id="previewNet">—</span></div>
                     </div>
 
-                    <!-- Mobile Money Number + network -->
+                    <!-- Network / Provider -->
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <label style="font-size:14px;font-weight:600;color:#0F172A;margin:0;">Mobile Money Number</label>
-                        <div style="display:flex;gap:6px;">
-                            <button type="button" id="depNetMtn" onclick="selectDepositNetwork('mtn')" style="padding:5px 12px;border:none;border-radius:8px;background:#64748B;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">MTN</button>
-                            <button type="button" id="depNetAirtel" onclick="selectDepositNetwork('airtel')" style="padding:5px 12px;border:none;border-radius:8px;background:#E2E8F0;color:#64748B;font-size:12px;font-weight:600;cursor:pointer;">Airtel</button>
-                        </div>
+                        <label style="font-size:14px;font-weight:600;color:#0F172A;margin:0;">Mobile Money</label>
+                        <div id="depNetworkToggle" class="dep-network-toggle" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div style="margin-top:12px;margin-bottom:8px;">
+                        <label style="font-size:14px;font-weight:600;color:#0F172A;">Mobile Money Number</label>
                     </div>
                     <div style="display:flex;align-items:stretch;border:1.5px solid #E2E8F0;border-radius:12px;overflow:hidden;background:#FFFFFF;margin-bottom:8px;">
-                        <span style="display:flex;align-items:center;padding:0 14px;background:#F8FAFC;color:#94A3B8;border-right:1px solid #E2E8F0;"><i class="fas fa-phone"></i></span>
-                        <input type="tel" id="depositPhone" placeholder="e.g. 07********"
+                        <span id="depPhonePrefix" style="display:flex;align-items:center;padding:0 12px;background:#F8FAFC;color:#64748B;font-weight:700;font-size:13px;border-right:1px solid #E2E8F0;">+256</span>
+                        <input type="tel" id="depositPhone" placeholder="7XXXXXXXX"
                             style="flex:1;border:none;outline:none;padding:14px 16px;font-size:15px;color:#0F172A;background:#FFFFFF;" />
                     </div>
-                    <p style="font-size:12px;color:#94A3B8;margin:0 0 20px;line-height:1.4;">Enter the phone number that will receive the payment prompt.</p>
+                    <p id="depPhoneHint" style="font-size:12px;color:#94A3B8;margin:0 0 20px;line-height:1.4;">Enter the number that will receive the MarzPay PIN prompt (Uganda MTN/Airtel).</p>
 
                     <button onclick="initiateMarzDeposit()" class="fw-submit"
                         style="width:100%;padding:16px;background:#059669;color:#FFFFFF;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(5,150,105,0.25);">
@@ -5742,15 +5760,14 @@
                     <div id="depositInfo" class="info-message" style="margin-top:10px;"></div>
                 </div>
 
-                <!-- Instant & Secure -->
                 <div style="display:flex;gap:14px;background:#F8FAFC;border-radius:14px;padding:16px;margin-top:16px;border:1px solid #F1F5F9;">
                     <div style="width:36px;height:36px;border-radius:50%;background:#D1FAE5;color:#059669;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;">
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <div>
-                        <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px;">Instant &amp; Secure Payment</div>
+                        <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px;">MarzPay · Multi-country</div>
                         <div style="font-size:13px;color:#64748B;line-height:1.45;">
-                            After clicking <strong>Proceed</strong>, check your phone for a PIN prompt to authorize the transaction. Your balance will update automatically upon completion.
+                            Pay with <strong>Uganda</strong> (MTN/Airtel), <strong>Kenya</strong> (M-Pesa), <strong>Rwanda</strong> (MTN/Airtel), or <strong>DRC</strong> (Vodacom/Airtel/Orange). Approve the prompt on your phone — balance updates automatically.
                         </div>
                     </div>
                 </div>
@@ -6081,6 +6098,18 @@
                     <span class="icon">✅</span>
                     Approve WD
                 </button>
+                <button onclick="adminRunProfitDistribution()">
+                    <span class="icon">💰</span>
+                    Run Profits
+                </button>
+                <button onclick="adminRefreshFxRates()">
+                    <span class="icon">📈</span>
+                    FX Rates
+                </button>
+                <button onclick="adminForceOneDayProfits()">
+                    <span class="icon">⚡</span>
+                    Force 1 Day
+                </button>
                 <button onclick="adminBroadcastToAll()">
                     <span class="icon">📢</span>
                     Broadcast
@@ -6099,13 +6128,32 @@
                 <button class="admin-tab" onclick="adminSwitchTab('support')"><i class="fas fa-headset"></i> Support</button>
                 <button class="admin-tab" onclick="adminSwitchTab('transactions')"><i class="fas fa-list"></i> Transactions</button>
                 <button class="admin-tab" onclick="adminSwitchTab('rentals')"><i class="fas fa-motorcycle"></i> Rentals</button>
+                <button class="admin-tab" onclick="adminSwitchTab('products')"><i class="fas fa-box"></i> Products</button>
+                <button class="admin-tab" onclick="adminSwitchTab('vipcodes')"><i class="fas fa-gift"></i> VIP Codes</button>
             </div>
 
             <div id="adminUsersTab" class="admin-section">
-                <h3><i class="fas fa-users"></i> All Users <span class="badge" id="userCountBadge">0</span></h3>
-
-                <div id="adminUserList">
+                <h3><i class="fas fa-users"></i> All Registered Users <span class="badge" id="userCountBadge">0</span></h3>
+                <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">View, search, and manage every account — balances, investments, referrals, deposits, withdrawals.</p>
+                <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                    <input type="text" id="adminUserSearch" placeholder="Search phone, referral, country..." class="form-input" style="flex:1;min-width:160px;" oninput="renderAdminUsers()" />
+                    <select id="adminUserFilter" class="form-input" style="min-width:140px;" onchange="renderAdminUsers()">
+                        <option value="all">All users</option>
+                        <option value="active">With deposit</option>
+                        <option value="rental">With rental</option>
+                        <option value="suspended">Suspended</option>
+                        <option value="nodeposit">No deposit</option>
+                    </select>
+                    <select id="adminUserSort" class="form-input" style="min-width:140px;" onchange="renderAdminUsers()">
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                        <option value="balance_high">Balance high</option>
+                        <option value="balance_low">Balance low</option>
+                    </select>
                 </div>
+                <div id="adminUserStatsRow" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
+                <div id="adminUserDetailPanel" style="display:none;margin-bottom:14px;"></div>
+                <div id="adminUserList"></div>
             </div>
 
             <div id="adminDepositsTab" class="admin-section" style="display:none;">
@@ -6178,6 +6226,63 @@
                 </div>
             </div>
 
+            <div id="adminProductsTab" class="admin-section" style="display:none;">
+                <h3><i class="fas fa-box"></i> Manage Products <span class="badge" id="productCountBadge">0</span></h3>
+                <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Edit bike packages — price, daily return, duration, image, and description. Changes save for all users.</p>
+                <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                    <button onclick="adminOpenProductEditor()" style="padding:10px 14px;border:none;border-radius:8px;background:linear-gradient(135deg,#059669,#047857);color:#fff;font-weight:700;cursor:pointer;">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                    <button onclick="adminResetProductsDefault()" style="padding:10px 14px;border:1px solid #1a2a4a;border-radius:8px;background:#12122a;color:#b0b0c8;font-weight:600;cursor:pointer;">
+                        <i class="fas fa-undo"></i> Reset Defaults
+                    </button>
+                </div>
+                <div id="adminProductList"></div>
+
+                <div id="adminProductEditor" style="display:none;margin-top:14px;background:rgba(16,16,34,0.45);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;">
+                    <h4 style="color:#fff;margin-bottom:10px;" id="adminProductEditorTitle">Edit Product</h4>
+                    <input type="hidden" id="prodEditId" />
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div>
+                            <label style="font-size:12px;color:#b0b0c8;">Name</label>
+                            <input id="prodName" class="form-input" style="width:100%;" placeholder="Bike name" />
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div>
+                                <label style="font-size:12px;color:#b0b0c8;">Price (UGX)</label>
+                                <input id="prodPrice" type="number" class="form-input" style="width:100%;" min="1000" step="1000" />
+                            </div>
+                            <div>
+                                <label style="font-size:12px;color:#b0b0c8;">Daily Return (UGX)</label>
+                                <input id="prodDaily" type="number" class="form-input" style="width:100%;" min="0" step="100" />
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div>
+                                <label style="font-size:12px;color:#b0b0c8;">Duration (days)</label>
+                                <input id="prodDays" type="number" class="form-input" style="width:100%;" min="1" step="1" />
+                            </div>
+                            <div>
+                                <label style="font-size:12px;color:#b0b0c8;">Type</label>
+                                <input id="prodType" class="form-input" style="width:100%;" placeholder="Electric Starter" />
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#b0b0c8;">Image URL</label>
+                            <input id="prodImage" class="form-input" style="width:100%;" placeholder="https://..." />
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#b0b0c8;">Description</label>
+                            <textarea id="prodDesc" class="form-input" style="width:100%;min-height:70px;" placeholder="Product description"></textarea>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button onclick="adminSaveProduct()" style="flex:1;padding:12px;border:none;border-radius:8px;background:#059669;color:#fff;font-weight:700;cursor:pointer;">💾 Save Product</button>
+                            <button onclick="adminCloseProductEditor()" style="padding:12px 16px;border:1px solid #1a2a4a;border-radius:8px;background:#12122a;color:#b0b0c8;font-weight:600;cursor:pointer;">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="admin-section">
                 <h3><i class="fas fa-tools"></i> Admin Actions</h3>
 
@@ -6189,6 +6294,22 @@
                             <label style="font-size:13px;color:var(--text-muted);">User Phone Number</label>
                             <input type="text" id="adminUserPhone" placeholder="e.g., 0707123456" class="form-input" oninput="adminCheckUserExists(this.value)" style="font-size:16px;" />
                             <div id="adminUserCheck" style="font-size:13px;margin-top:5px;min-height:20px;"></div>
+
+            <div id="adminVipCodesTab" class="admin-section" style="display:none;">
+                <h3><i class="fas fa-gift"></i> VIP Gift Codes</h3>
+                <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                    These codes credit UGX when redeemed. <strong>Each user can use each code only once.</strong>
+                </p>
+                <div style="background:rgba(16,16,34,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px;margin-bottom:12px;font-size:13px;color:#b0b0c8;line-height:1.6;">
+                    <div>🎟️ <strong style="color:#fff;">UG112D</strong> → UGX 200</div>
+                    <div>🎟️ <strong style="color:#fff;">VT88W1</strong> → UGX 300</div>
+                    <div>🎟️ <strong style="color:#fff;">KW3300</strong> → UGX 500</div>
+                    <div>🎟️ <strong style="color:#fff;">BB338W</strong> → UGX 900</div>
+                </div>
+                <div id="adminVipCodeList"></div>
+            </div>
+
+
                         </div>
                         <div>
                             <label style="font-size:13px;color:var(--text-muted);">Amount (UGX)</label>
@@ -6308,9 +6429,23 @@ let supabaseConnected = false;
 // BIKES DATA (RENTALS) - UPDATED IMAGE URLs
 // ============================================
 
-const BIKES = [
+let BIKES = [
     { 
         id: 1, 
+        name: 'AI Starter S0', 
+        price: 15000, 
+        dailyReturn: 1500, 
+        days: 45, 
+        location: 'Kampala, Uganda',
+        type: 'Electric Starter',
+        image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/2478b72e-633c-464a-9f97-88d491602e28.png',
+        emoji: '🚲',
+        rented: false,
+        totalPayout: 67500,
+        description: 'Entry-level AI starter bike — perfect for new investors'
+    },
+    { 
+        id: 2, 
         name: 'AI Cruiser X1', 
         price: 25000, 
         dailyReturn: 2500, 
@@ -6324,7 +6459,7 @@ const BIKES = [
         description: 'AI-powered electric cruiser with smart navigation and auto-pilot'
     },
     { 
-        id: 2, 
+        id: 3, 
         name: 'AI Sport S2', 
         price: 50000, 
         dailyReturn: 5000, 
@@ -6338,7 +6473,7 @@ const BIKES = [
         description: 'High-performance AI sport bike with adaptive suspension and AI traction control'
     },
     { 
-        id: 3, 
+        id: 4, 
         name: 'AI Adventure A3', 
         price: 100000, 
         dailyReturn: 10000, 
@@ -6352,7 +6487,7 @@ const BIKES = [
         description: 'AI adventure bike with off-road capabilities and terrain-adaptive AI'
     },
     { 
-        id: 4, 
+        id: 5, 
         name: 'AI Commuter C4', 
         price: 150000, 
         dailyReturn: 15000, 
@@ -6366,7 +6501,7 @@ const BIKES = [
         description: 'Smart AI commuter bike with traffic optimization and voice control'
     },
     { 
-        id: 5, 
+        id: 6, 
         name: 'AI Performance P5', 
         price: 250000, 
         dailyReturn: 25000, 
@@ -6380,7 +6515,7 @@ const BIKES = [
         description: 'Ultimate AI performance bike with predictive analytics and race mode'
     },
     { 
-        id: 6, 
+        id: 7, 
         name: 'AI Luxury L6', 
         price: 500000, 
         dailyReturn: 55000, 
@@ -6394,7 +6529,7 @@ const BIKES = [
         description: 'AI luxury bike with autonomous driving, premium comfort, and AI concierge'
     },
     { 
-        id: 7, 
+        id: 8, 
         name: 'AI Titan T7', 
         price: 1000000, 
         dailyReturn: 100000, 
@@ -6408,7 +6543,7 @@ const BIKES = [
         description: 'AI titan bike with AI-powered safety systems and autonomous fleet management'
     },
     { 
-        id: 8, 
+        id: 9, 
         name: 'AI Phantom P8', 
         price: 2500000, 
         dailyReturn: 250000, 
@@ -6529,6 +6664,7 @@ const APP_DATA = {
     pendingDeposits: [],
     depositHistory: [],
     withdrawHistory: []
+}    vipRedemptions: [],
 };
 
 let selectedPayment = 'airtel';
@@ -6554,7 +6690,7 @@ function saveDataLocal() {
 }
 
 function loadFromLocalStorage() {
-    const keys = ['users', 'transactions', 'rentals', 'messages', 'supportMessages', 'referrals', 'pendingWithdrawals', 'pendingDeposits', 'depositHistory', 'withdrawHistory'];
+    const keys = ['users', 'transactions', 'rentals', 'messages', 'supportMessages', 'referrals', 'pendingWithdrawals', 'pendingDeposits', 'depositHistory', 'withdrawHistory', 'vipRedemptions'];
     keys.forEach(key => {
         const data = localStorage.getItem('bike_' + key);
         if (data) {
@@ -6952,6 +7088,7 @@ function showAuthTab(tab) {
     const nav = document.getElementById('bottomNav');
     if (nav) nav.style.display = 'none';
     if (tab === 'login') loadSavedLoginCredentials();
+    if (tab === 'register') { try { onRegisterCountryChange(); } catch(e) {} }
 }
 
 function togglePassword(inputId) {
@@ -6968,11 +7105,30 @@ function togglePassword(inputId) {
 
 function generateReferralCode(phone) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const digits = String(phone || '').replace(/\D/g, '');
     let code = '';
-    for (let i = 0; i < 7; i++) {
+    // Mix phone tail + random for uniqueness and readability
+    if (digits.length >= 4) {
+        code = digits.slice(-4);
+    }
+    while (code.length < 7) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    code = code.toUpperCase().slice(0, 7);
+    // Ensure uniqueness among users
+    let attempts = 0;
+    while ((APP_DATA.users || []).some(u => u.referralCode === code) && attempts < 20) {
+        code = '';
+        for (let i = 0; i < 7; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+        attempts++;
+    }
     return code;
+}
+
+function findUserByReferralCode(code) {
+    if (!code) return null;
+    const normalized = String(code).trim().toUpperCase();
+    return (APP_DATA.users || []).find(u => String(u.referralCode || '').toUpperCase() === normalized) || null;
 }
 
 function getReferralFromURL() {
@@ -6996,7 +7152,7 @@ function autoFillReferralCode() {
         const nameEl = document.getElementById('referralBannerName');
         if (banner && nameEl) {
             // Try to resolve referrer name/phone from users
-            const referrer = (APP_DATA.users || []).find(u => u.referralCode === refCode.toUpperCase());
+            const referrer = findUserByReferralCode(refCode);
             nameEl.textContent = referrer ? (referrer.phone || refCode) : refCode;
             banner.style.display = 'block';
         }
@@ -7006,6 +7162,291 @@ function autoFillReferralCode() {
 // ============================================
 // HANDLE REGISTER
 // ============================================
+
+
+// ============================================
+// USER COUNTRY + REAL-TIME EXCHANGE RATES
+// Ledger is stored in UGX; display converts by live FX
+// toUgx = how many UGX equal 1 unit of local currency
+// ============================================
+const FX_FALLBACK = {
+    UG: 1,
+    KE: 28,      // ~1 KES in UGX
+    RW: 7,       // ~1 RWF in UGX
+    CD: 0.4      // ~1 CDF in UGX
+};
+
+const COUNTRY_CURRENCY = {
+    UG: { name: 'Uganda', currency: 'UGX', dial: '256', toUgx: FX_FALLBACK.UG, flag: '🇺🇬' },
+    KE: { name: 'Kenya', currency: 'KES', dial: '254', toUgx: FX_FALLBACK.KE, flag: '🇰🇪' },
+    RW: { name: 'Rwanda', currency: 'RWF', dial: '250', toUgx: FX_FALLBACK.RW, flag: '🇷🇼' },
+    CD: { name: 'DRC Congo', currency: 'CDF', dial: '243', toUgx: FX_FALLBACK.CD, flag: '🇨🇩' }
+};
+
+let EXCHANGE_RATES = {
+    base: 'UGX',
+    updatedAt: null,
+    source: 'fallback',
+    // currency code -> units of that currency per 1 UGX
+    perUgx: { UGX: 1, KES: 1 / FX_FALLBACK.KE, RWF: 1 / FX_FALLBACK.RW, CDF: 1 / FX_FALLBACK.CD },
+    // local currency -> UGX
+    toUgx: { UGX: 1, KES: FX_FALLBACK.KE, RWF: FX_FALLBACK.RW, CDF: FX_FALLBACK.CD }
+};
+
+let _fxFetchPromise = null;
+let _fxRefreshTimer = null;
+
+function applyFxToCountryMeta() {
+    Object.keys(COUNTRY_CURRENCY).forEach(code => {
+        const cur = COUNTRY_CURRENCY[code].currency;
+        if (EXCHANGE_RATES.toUgx[cur] != null) {
+            COUNTRY_CURRENCY[code].toUgx = EXCHANGE_RATES.toUgx[cur];
+        }
+    });
+    // Keep MarzPay deposit conversion in sync when available
+    if (typeof MARZ_MARKETS !== 'undefined') {
+        Object.keys(MARZ_MARKETS).forEach(code => {
+            const cur = MARZ_MARKETS[code].currency;
+            if (EXCHANGE_RATES.toUgx[cur] != null) {
+                MARZ_MARKETS[code].toUgx = EXCHANGE_RATES.toUgx[cur];
+            }
+        });
+    }
+}
+
+function loadCachedExchangeRates() {
+    try {
+        const raw = localStorage.getItem('bike_fx_rates');
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data || !data.toUgx || !data.updatedAt) return false;
+        // Cache valid for 6 hours
+        const age = Date.now() - new Date(data.updatedAt).getTime();
+        if (isNaN(age) || age > 6 * 60 * 60 * 1000) return false;
+        EXCHANGE_RATES = Object.assign({}, EXCHANGE_RATES, data);
+        applyFxToCountryMeta();
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function saveCachedExchangeRates() {
+    try {
+        localStorage.setItem('bike_fx_rates', JSON.stringify(EXCHANGE_RATES));
+    } catch (e) {}
+}
+
+function setRatesFromUsdTable(usdRates, source) {
+    // usdRates: map of currency -> units per 1 USD
+    const ugxPerUsd = Number(usdRates.UGX);
+    const kesPerUsd = Number(usdRates.KES);
+    const rwfPerUsd = Number(usdRates.RWF);
+    const cdfPerUsd = Number(usdRates.CDF);
+
+    if (!ugxPerUsd || ugxPerUsd <= 0) throw new Error('Missing UGX rate');
+
+    const toUgx = { UGX: 1 };
+    // 1 KES = (UGX per USD) / (KES per USD) UGX
+    if (kesPerUsd > 0) toUgx.KES = ugxPerUsd / kesPerUsd;
+    if (rwfPerUsd > 0) toUgx.RWF = ugxPerUsd / rwfPerUsd;
+    if (cdfPerUsd > 0) toUgx.CDF = ugxPerUsd / cdfPerUsd;
+
+    // Fill any missing with fallback
+    if (!toUgx.KES) toUgx.KES = FX_FALLBACK.KE;
+    if (!toUgx.RWF) toUgx.RWF = FX_FALLBACK.RW;
+    if (!toUgx.CDF) toUgx.CDF = FX_FALLBACK.CD;
+
+    const perUgx = {
+        UGX: 1,
+        KES: 1 / toUgx.KES,
+        RWF: 1 / toUgx.RWF,
+        CDF: 1 / toUgx.CDF
+    };
+
+    EXCHANGE_RATES = {
+        base: 'UGX',
+        updatedAt: new Date().toISOString(),
+        source: source || 'live',
+        perUgx,
+        toUgx,
+        usd: {
+            UGX: ugxPerUsd,
+            KES: kesPerUsd || null,
+            RWF: rwfPerUsd || null,
+            CDF: cdfPerUsd || null
+        }
+    };
+    applyFxToCountryMeta();
+    saveCachedExchangeRates();
+    updateFxRateUI();
+    // Refresh visible converted amounts
+    try {
+        const u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+        if (u && !u.isAdmin && typeof loadDashboard === 'function') {
+            const dash = document.getElementById('dashboardPage');
+            if (dash && dash.classList.contains('active')) loadDashboard();
+        }
+        if (typeof updateDepositFeePreview === 'function') updateDepositFeePreview();
+    } catch (e) {}
+}
+
+async function fetchLiveExchangeRates(force) {
+    if (_fxFetchPromise && !force) return _fxFetchPromise;
+
+    _fxFetchPromise = (async () => {
+        // 1) open.er-api.com (no key) — wide currency list including CDF
+        try {
+            const res = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.rates && data.rates.UGX) {
+                    setRatesFromUsdTable(data.rates, 'open.er-api.com');
+                    return EXCHANGE_RATES;
+                }
+            }
+        } catch (e) {
+            console.warn('FX primary source failed', e);
+        }
+
+        // 2) exchangerate-api.com free tier path (no key for v4)
+        try {
+            const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD', { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.rates && data.rates.UGX) {
+                    setRatesFromUsdTable(data.rates, 'exchangerate-api.com');
+                    return EXCHANGE_RATES;
+                }
+            }
+        } catch (e) {
+            console.warn('FX secondary source failed', e);
+        }
+
+        // 3) Keep cache or fallback
+        if (!EXCHANGE_RATES.updatedAt) {
+            EXCHANGE_RATES.updatedAt = new Date().toISOString();
+            EXCHANGE_RATES.source = 'fallback';
+            applyFxToCountryMeta();
+        }
+        updateFxRateUI();
+        return EXCHANGE_RATES;
+    })();
+
+    try {
+        return await _fxFetchPromise;
+    } finally {
+        _fxFetchPromise = null;
+    }
+}
+
+async function adminRefreshFxRates() {
+    showToast('Fetching live exchange rates…', 'info');
+    await fetchLiveExchangeRates(true);
+    const s = getFxRateSummary();
+    showToast('FX updated (' + (s.source || '—') + ')', 'success');
+    if (typeof loadAdminDashboard === 'function') {
+        try { loadAdminDashboard(); } catch (e) {}
+    }
+}
+
+function startExchangeRateRefresh() {
+    loadCachedExchangeRates();
+    fetchLiveExchangeRates(false);
+    if (_fxRefreshTimer) clearInterval(_fxRefreshTimer);
+    // Refresh every 30 minutes
+    _fxRefreshTimer = setInterval(() => {
+        fetchLiveExchangeRates(true);
+    }, 30 * 60 * 1000);
+}
+
+function updateFxRateUI() {
+    const el = document.getElementById('fxRatesBanner');
+    if (!el) return;
+    const t = EXCHANGE_RATES.toUgx || {};
+    const when = EXCHANGE_RATES.updatedAt ? new Date(EXCHANGE_RATES.updatedAt).toLocaleString() : '—';
+    el.innerHTML = `
+        <div style="font-size:11px;font-weight:700;color:#64748B;margin-bottom:4px;">Live FX (1 unit → UGX) · ${EXCHANGE_RATES.source || '—'} · ${when}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:#0F172A;">
+            <span>🇰🇪 KES ${Number(t.KES || 0).toFixed(2)}</span>
+            <span>🇷🇼 RWF ${Number(t.RWF || 0).toFixed(2)}</span>
+            <span>🇨🇩 CDF ${Number(t.CDF || 0).toFixed(3)}</span>
+            <span>🇺🇬 UGX 1.00</span>
+        </div>
+    `;
+}
+
+function getUserCountryCode(user) {
+    const u = user || (typeof getCurrentUser === 'function' ? getCurrentUser() : null);
+    const code = (u && u.country) ? String(u.country).toUpperCase() : 'UG';
+    return COUNTRY_CURRENCY[code] ? code : 'UG';
+}
+
+function getCountryMeta(code) {
+    return COUNTRY_CURRENCY[code] || COUNTRY_CURRENCY.UG;
+}
+
+function ugxToLocal(amountUgx, countryCode) {
+    const meta = getCountryMeta(countryCode || getUserCountryCode());
+    const rate = meta.toUgx || 1;
+    if (!rate) return 0;
+    return Number(amountUgx || 0) / rate;
+}
+
+function localToUgx(amountLocal, countryCode) {
+    const meta = getCountryMeta(countryCode || getUserCountryCode());
+    return Math.round(Number(amountLocal || 0) * (meta.toUgx || 1));
+}
+
+function formatMoneyUGX(amountUgx, user) {
+    const code = getUserCountryCode(user);
+    const meta = getCountryMeta(code);
+    const local = ugxToLocal(amountUgx, code);
+    const rounded = meta.currency === 'KES'
+        ? (Math.round(local * 100) / 100)
+        : Math.round(local);
+    return meta.currency + ' ' + Number(rounded).toLocaleString(undefined, {
+        maximumFractionDigits: meta.currency === 'KES' ? 2 : 0
+    });
+}
+
+function formatMoneyAmountOnly(amountUgx, user) {
+    const code = getUserCountryCode(user);
+    const meta = getCountryMeta(code);
+    const local = ugxToLocal(amountUgx, code);
+    const rounded = meta.currency === 'KES'
+        ? (Math.round(local * 100) / 100)
+        : Math.round(local);
+    return Number(rounded).toLocaleString(undefined, {
+        maximumFractionDigits: meta.currency === 'KES' ? 2 : 0
+    });
+}
+
+function userCurrencyCode(user) {
+    return getCountryMeta(getUserCountryCode(user)).currency;
+}
+
+function getFxRateSummary() {
+    return {
+        source: EXCHANGE_RATES.source,
+        updatedAt: EXCHANGE_RATES.updatedAt,
+        toUgx: Object.assign({}, EXCHANGE_RATES.toUgx)
+    };
+}
+
+function onRegisterCountryChange() {
+    const sel = document.getElementById('registerCountry');
+    const dial = document.getElementById('registerDialCode');
+    if (!sel || !dial) return;
+    const meta = getCountryMeta(sel.value);
+    dial.textContent = '+' + meta.dial;
+    const phone = document.getElementById('registerPhone');
+    if (phone) {
+        if (sel.value === 'CD') phone.placeholder = 'e.g., 08XXXXXXX';
+        else phone.placeholder = 'e.g., 07XXXXXXX';
+    }
+}
+
 
 async function handleRegister() {
     const phone = document.getElementById('registerPhone').value.trim();
@@ -7045,7 +7486,7 @@ async function handleRegister() {
 
     let referrer = null;
     if (referralCode) {
-        referrer = APP_DATA.users.find(u => u.referralCode === referralCode);
+        referrer = findUserByReferralCode(referralCode);
         if (!referrer) {
             errorEl.textContent = '❌ Invalid referral code. Please check and try again.';
             errorEl.style.display = 'block';
@@ -7053,10 +7494,16 @@ async function handleRegister() {
         }
     }
 
+    const countrySel = document.getElementById('registerCountry');
+    const country = (countrySel && countrySel.value) ? countrySel.value.toUpperCase() : 'UG';
+    const countryMeta = getCountryMeta(country);
+
     const newUser = {
         id: 'user_' + Date.now(),
         phone: phone,
         password: password,
+        country: country,
+        currency: countryMeta.currency,
         balance: 5000,
         isAdmin: false,
         referralCode: generateReferralCode(phone),
@@ -7414,6 +7861,10 @@ function showApp(user) {
 
 function startAutoClaim() {
     if (autoClaimInterval) clearInterval(autoClaimInterval);
+    // Credit immediately on login/app open, then check every minute
+    if (autoClaimEnabled) {
+        try { performAutoClaim(); } catch (e) { console.warn(e); }
+    }
     autoClaimInterval = setInterval(() => {
         if (autoClaimEnabled) {
             performAutoClaim();
@@ -7428,37 +7879,84 @@ function stopAutoClaim() {
     }
 }
 
-function performAutoClaim() {
-    const user = getCurrentUser();
-    if (!user) return;
+function getRentalNextClaimTime(rental) {
+    if (rental.nextClaimTime) {
+        const t = new Date(rental.nextClaimTime);
+        if (!isNaN(t.getTime())) return t;
+    }
+    if (rental.lastClaimDate) {
+        const t = new Date(rental.lastClaimDate);
+        if (!isNaN(t.getTime())) return new Date(t.getTime() + 24 * 60 * 60 * 1000);
+    }
+    if (rental.startDate) {
+        const t = new Date(rental.startDate);
+        if (!isNaN(t.getTime())) {
+            // First income 24h after purchase; then every 24h after last claim dayCounter
+            const daysDone = rental.dayCounter || 0;
+            return new Date(t.getTime() + (daysDone + 1) * 24 * 60 * 60 * 1000);
+        }
+    }
+    // Not ready yet — schedule 24h from now
+    return new Date(Date.now() + 24 * 60 * 60 * 1000);
+}
 
-    if (user.suspended) return;
+function normalizeRental(rental) {
+    if (!rental) return rental;
+    if (rental.totalDays == null) rental.totalDays = rental.days || 0;
+    if (rental.days == null) rental.days = rental.totalDays || 0;
+    if (rental.remainingDays == null) {
+        rental.remainingDays = Math.max(0, (rental.totalDays || 0) - (rental.dayCounter || 0));
+    }
+    if (rental.amount == null && rental.price != null) rental.amount = rental.price;
+    if (rental.price == null && rental.amount != null) rental.price = rental.amount;
+    if (!rental.propertyImage && rental.image) rental.propertyImage = rental.image;
+    if (!rental.nextClaimTime) {
+        rental.nextClaimTime = getRentalNextClaimTime(rental).toISOString();
+    }
+    return rental;
+}
 
-    const rentals = APP_DATA.rentals.filter(rental =>
-        rental.phone === user.phone && rental.status === 'active'
+function creditDueProfitsForUser(user, options) {
+    options = options || {};
+    const forceOneDay = !!options.forceOneDay; // admin can force one daily cycle even if not due
+    const silent = !!options.silent;
+    if (!user || user.suspended || user.isAdmin) {
+        return { claimed: 0, claimedCount: 0, rentalsTouched: 0 };
+    }
+
+    const rentals = (APP_DATA.rentals || []).filter(r =>
+        r.phone === user.phone && r.status === 'active'
     );
-
-    if (rentals.length === 0) return;
+    if (!rentals.length) return { claimed: 0, claimedCount: 0, rentalsTouched: 0 };
 
     let claimed = 0;
     let claimedCount = 0;
+    let rentalsTouched = 0;
+    const now = new Date();
 
     rentals.forEach(rental => {
-        const now = new Date();
-        const nextClaim = new Date(rental.nextClaimTime || rental.lastClaimDate);
+        normalizeRental(rental);
+        let nextClaim = getRentalNextClaimTime(rental);
+        let guard = 0;
+        let touched = false;
 
-        if (now.getTime() >= nextClaim.getTime()) {
-            const profit = rental.dailyReturn;
-            
-            user.balance += profit;
-            
+        // If forcing, treat as due once when not yet due
+        if (forceOneDay && now.getTime() < nextClaim.getTime() && (rental.remainingDays || 0) > 0) {
+            nextClaim = new Date(now.getTime() - 1000);
+        }
+
+        while (now.getTime() >= nextClaim.getTime() && (rental.remainingDays || 0) > 0 && guard < 7) {
+            guard++;
+            const profit = Number(rental.dailyReturn) || 0;
+            if (profit <= 0) break;
+
+            user.balance = (user.balance || 0) + profit;
             rental.totalEarned = (rental.totalEarned || 0) + profit;
-            rental.remainingDays -= 1;
+            rental.remainingDays = Math.max(0, (rental.remainingDays || 0) - 1);
             rental.dayCounter = (rental.dayCounter || 0) + 1;
             rental.lastClaimDate = now.toISOString();
-            
-            const nextClaimTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-            rental.nextClaimTime = nextClaimTime.toISOString();
+            nextClaim = new Date(nextClaim.getTime() + 24 * 60 * 60 * 1000);
+            rental.nextClaimTime = nextClaim.toISOString();
 
             if (rental.remainingDays <= 0) {
                 rental.status = 'completed';
@@ -7477,23 +7975,109 @@ function performAutoClaim() {
 
             claimed += profit;
             claimedCount++;
+            touched = true;
+            if (rental.status !== 'active') break;
+            if (forceOneDay && guard >= 1) break; // only one forced day per rental
         }
+        if (touched) rentalsTouched++;
     });
 
     if (claimed > 0) {
         updateUserInStorage(user);
+    }
+    return { claimed, claimedCount, rentalsTouched };
+}
+
+function performAutoClaim() {
+    const user = getCurrentUser();
+    if (!user) return;
+    if (user.isAdmin && !impersonatingUser) return; // admin panel user — use admin runner instead
+
+    const result = creditDueProfitsForUser(user, { silent: false });
+    if (result.claimed > 0) {
         saveData();
-        loadDashboard();
-        
+        if (typeof loadDashboard === 'function') loadDashboard();
+        if (typeof loadProfilePage === 'function') {
+            try { loadProfilePage(); } catch (e) {}
+        }
         const activePage = document.querySelector('.page.active');
         if (activePage && activePage.id === 'myRentalsPage') {
             renderMyRentals();
         }
+        showToast(`💰 +UGX ${result.claimed.toLocaleString()} daily profit credited (${result.claimedCount} payment${result.claimedCount > 1 ? 's' : ''})`, 'success');
     }
+}
+
+/**
+ * Run daily profit distribution for all invested users.
+ * @param {object} options forceOneDay - credit one day even if 24h not reached (admin testing)
+ */
+async function runDailyProfitDistribution(options) {
+    options = options || {};
+    const forceOneDay = !!options.forceOneDay;
+    refreshAllData();
+
+    let totalClaimed = 0;
+    let totalPayments = 0;
+    let usersPaid = 0;
+    let rentalsTouched = 0;
+
+    const users = (APP_DATA.users || []).filter(u => !u.isAdmin && !u.suspended);
+    users.forEach(user => {
+        const result = creditDueProfitsForUser(user, { forceOneDay, silent: true });
+        if (result.claimed > 0) {
+            totalClaimed += result.claimed;
+            totalPayments += result.claimedCount;
+            usersPaid++;
+            rentalsTouched += result.rentalsTouched;
+        }
+    });
+
+    await saveData();
+
+    if (typeof loadAdminDashboard === 'function') {
+        try { loadAdminDashboard(); } catch (e) {}
+    }
+
+    if (totalClaimed > 0) {
+        showToast(`✅ Profit distribution done: UGX ${totalClaimed.toLocaleString()} → ${usersPaid} user(s), ${totalPayments} payment(s)`, 'success');
+    } else {
+        showToast(forceOneDay
+            ? 'No active investments to credit.'
+            : 'No profits due yet. Next credit is 24h after each purchase/last payment.',
+            'info');
+    }
+
+    return { totalClaimed, totalPayments, usersPaid, rentalsTouched };
+}
+
+async function adminRunProfitDistribution() {
+    const admin = getCurrentUser();
+    if (!admin || !admin.isAdmin) {
+        showToast('Admin only', 'error');
+        return;
+    }
+    if (!confirm('Run daily profit distribution for ALL users with active bikes?\n\n• Due profits (24h+) will be credited\n• Balances & transactions will update')) {
+        return;
+    }
+    await runDailyProfitDistribution({ forceOneDay: false });
+}
+
+async function adminForceOneDayProfits() {
+    const admin = getCurrentUser();
+    if (!admin || !admin.isAdmin) {
+        showToast('Admin only', 'error');
+        return;
+    }
+    if (!confirm('FORCE credit ONE daily profit to every active investment now?\n\nUse this to test or if you need to push today\\'s income early.')) {
+        return;
+    }
+    await runDailyProfitDistribution({ forceOneDay: true });
 }
 
 // ============================================
 // SUSPEND USER FUNCTIONS
+
 // ============================================
 
 async function adminSuspendUser(phone) {
@@ -7604,9 +8188,12 @@ function loadDashboard() {
     const nameEl = document.getElementById('dashUserName');
     if (nameEl) nameEl.textContent = user.phone || 'User';
 
-    // Balance cards
+    // Balance cards (converted to user currency)
+    const cur = userCurrencyCode(user);
     const balEl = document.getElementById('dashBalance');
-    if (balEl) balEl.textContent = (user.balance || 0).toLocaleString();
+    if (balEl) balEl.textContent = formatMoneyAmountOnly(user.balance || 0, user);
+    // Update currency labels next to numbers
+    document.querySelectorAll('#dashboardPage .stat-value small').forEach(el => { el.textContent = cur; });
 
     const userTransactions = APP_DATA.transactions.filter(t => t.phone === user.phone);
     const totalEarnings = userTransactions
@@ -7624,18 +8211,54 @@ function loadDashboard() {
 
     // Capital = sum of active rental package prices
     const activeRentals = APP_DATA.rentals.filter(r => r.phone === user.phone && r.status === 'active');
-    const capital = activeRentals.reduce((sum, r) => sum + (r.price || r.propertyPrice || 0), 0);
+    const capital = activeRentals.reduce((sum, r) => sum + (r.amount || r.price || r.propertyPrice || 0), 0);
 
     const setText = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.textContent = val;
     };
 
-    setText('dashTotalEarned', totalEarnings.toLocaleString());
-    setText('dashProduct', capital.toLocaleString());
-    setText('dashTotalWithdrawn', totalWithdrawn.toLocaleString());
-    setText('dashCommissions', totalCommissions.toLocaleString() + ' UGX');
-    setText('dashBonuses', totalBonuses.toLocaleString() + ' UGX');
+    setText('dashTotalEarned', formatMoneyAmountOnly(totalEarnings, user));
+    setText('dashProduct', formatMoneyAmountOnly(capital, user));
+    setText('dashTotalWithdrawn', formatMoneyAmountOnly(totalWithdrawn, user));
+    setText('dashCommissions', formatMoneyUGX(totalCommissions, user));
+    setText('dashBonuses', formatMoneyUGX(totalBonuses, user));
+
+    // Country chip on dashboard if present
+    let chip = document.getElementById('dashCountryChip');
+    if (!chip) {
+        const banner = document.querySelector('#dashboardPage .welcome-banner');
+        if (banner) {
+            chip = document.createElement('div');
+            chip.id = 'dashCountryChip';
+            chip.style.cssText = 'margin-top:10px;font-size:12px;font-weight:600;color:#475569;';
+            banner.appendChild(chip);
+        }
+    }
+    if (chip) {
+        const meta = getCountryMeta(getUserCountryCode(user));
+        const t = EXCHANGE_RATES.toUgx || {};
+        const rateBit = meta.currency === 'UGX' ? '1 UGX = 1 UGX' : (
+            '1 ' + meta.currency + ' ≈ ' + Number(t[meta.currency] || meta.toUgx || 0).toFixed(meta.currency === 'CDF' ? 3 : 2) + ' UGX'
+        );
+        chip.innerHTML = meta.flag + ' ' + meta.name + ' · ' + meta.currency + ' · <span style="color:#059669;">' + rateBit + '</span>' +
+            (EXCHANGE_RATES.source ? ' · <span style="color:#94A3B8;">FX: ' + EXCHANGE_RATES.source + '</span>' : '');
+    }
+
+    // Floating FX info under stats if missing
+    let fxBanner = document.getElementById('fxRatesBanner');
+    if (!fxBanner) {
+        const content = document.querySelector('#dashboardPage .dash-content');
+        if (content) {
+            fxBanner = document.createElement('div');
+            fxBanner.id = 'fxRatesBanner';
+            fxBanner.style.cssText = 'background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;margin-bottom:14px;';
+            const stats = content.querySelector('.stats-grid');
+            if (stats && stats.parentNode) stats.parentNode.insertBefore(fxBanner, stats.nextSibling);
+            else content.appendChild(fxBanner);
+        }
+    }
+    updateFxRateUI();
 }
 
 // ============================================
@@ -7669,7 +8292,7 @@ function renderProperties(properties) {
     const user = getCurrentUser();
     const balEl = document.getElementById('packagesBalance');
     if (balEl && user) {
-        balEl.textContent = 'UGX ' + (user.balance || 0).toLocaleString();
+        balEl.textContent = formatMoneyUGX(user.balance || 0, user);
     }
 
     if (properties.length === 0) {
@@ -7681,6 +8304,9 @@ function renderProperties(properties) {
         const totalProfit = p.totalPayout - p.price;
         const dailyPct = ((p.dailyReturn / p.price) * 100).toFixed(0);
         const isRented = p.rented || false;
+        const priceL = formatMoneyUGX(p.price, user);
+        const dailyL = formatMoneyUGX(p.dailyReturn, user);
+        const profitL = formatMoneyUGX(totalProfit, user);
         
         return `
         <div class="pkg-card ${isRented ? 'pkg-rented' : ''}">
@@ -7699,12 +8325,12 @@ function renderProperties(properties) {
                 <div class="pkg-metrics">
                     <div class="pkg-metric">
                         <div class="pkg-metric-icon"><i class="fas fa-chart-line"></i></div>
-                        <div class="pkg-metric-val">UGX ${totalProfit.toLocaleString()}</div>
+                        <div class="pkg-metric-val">${profitL}</div>
                         <div class="pkg-metric-label">Total profit</div>
                     </div>
                     <div class="pkg-metric">
                         <div class="pkg-metric-icon"><i class="fas fa-calendar-alt"></i></div>
-                        <div class="pkg-metric-val">UGX ${p.dailyReturn.toLocaleString()}</div>
+                        <div class="pkg-metric-val">${dailyL}</div>
                         <div class="pkg-metric-label">Daily</div>
                     </div>
                     <div class="pkg-metric">
@@ -7715,7 +8341,7 @@ function renderProperties(properties) {
                 </div>
                 
                 <div class="pkg-footer">
-                    <div class="pkg-price">UGX ${p.price.toLocaleString()}</div>
+                    <div class="pkg-price">${priceL}</div>
                     <button class="pkg-invest-btn" onclick="buyProperty(${p.id})" ${isRented ? 'disabled' : ''}>
                         ${isRented ? 'Owned' : 'Invest Now'}
                     </button>
@@ -7755,7 +8381,7 @@ function buyProperty(propertyId) {
         `Price: UGX ${property.price.toLocaleString()}\n` +
         `Daily: UGX ${property.dailyReturn.toLocaleString()}\n` +
         `Duration: ${property.days} days\n` +
-        `Total Profit: UGX ${totalProfit.toLocaleString()}`
+        `Total Profit: ${profitL}`
     );
     if (!confirmed) return;
 
@@ -7766,16 +8392,25 @@ function buyProperty(propertyId) {
         phone: user.phone,
         propertyId: property.id,
         propertyName: property.name,
+        amount: property.price,
         price: property.price,
         dailyReturn: property.dailyReturn,
         days: property.days,
+        totalDays: property.days,
+        remainingDays: property.days,
         totalPayout: property.totalPayout,
         dayCounter: 0,
+        totalEarned: 0,
         status: 'active',
         startDate: new Date().toISOString(),
         lastClaim: null,
-        image: property.image
+        lastClaimDate: null,
+        nextClaimTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        image: property.image,
+        propertyImage: property.image,
+        collected: false
     };
+    user.activeRentals = (user.activeRentals || 0) + 1;
     APP_DATA.rentals.push(rental);
 
     APP_DATA.transactions.push({
@@ -7806,12 +8441,15 @@ function processReferralCommission(userPhone, propertyPrice, propertyName) {
 
     const referrer = APP_DATA.users.find(u => u.phone === user.referredBy);
     if (!referrer) return;
+    if (referrer.suspended) return;
 
-    const commission = propertyPrice * 0.30;
+    const commission = Math.round(Number(propertyPrice) * 0.30);
+    if (!commission || commission <= 0) return;
+
     referrer.balance = (referrer.balance || 0) + commission;
     
     APP_DATA.transactions.push({
-        id: 'txn_' + Date.now(),
+        id: 'txn_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
         phone: referrer.phone,
         type: 'referral_bonus',
         amount: commission,
@@ -7820,18 +8458,29 @@ function processReferralCommission(userPhone, propertyPrice, propertyName) {
         status: 'completed'
     });
     
-    const referralRecord = APP_DATA.referrals.find(r => 
+    let referralRecord = (APP_DATA.referrals || []).find(r => 
         r.referrerPhone === referrer.phone && r.refereePhone === userPhone
     );
-    if (referralRecord) {
-        referralRecord.commission = (referralRecord.commission || 0) + commission;
-        referralRecord.hasRented = true;
-        referralRecord.totalSpent = (referralRecord.totalSpent || 0) + propertyPrice;
+    if (!referralRecord) {
+        referralRecord = {
+            id: 'ref_' + Date.now(),
+            referrerPhone: referrer.phone,
+            refereePhone: userPhone,
+            level: 1,
+            date: new Date().toISOString(),
+            commission: 0,
+            hasRented: false,
+            totalSpent: 0
+        };
+        if (!APP_DATA.referrals) APP_DATA.referrals = [];
+        APP_DATA.referrals.push(referralRecord);
     }
-    
+    referralRecord.commission = (referralRecord.commission || 0) + commission;
+    referralRecord.hasRented = true;
+    referralRecord.totalSpent = (referralRecord.totalSpent || 0) + Number(propertyPrice);
+
     updateUserInStorage(referrer);
     saveData();
-    // Toast notification removed - commission is added silently
 }
 
 // ============================================
@@ -7841,6 +8490,7 @@ function processReferralCommission(userPhone, propertyPrice, propertyName) {
 function loadMyRentals() {
     const user = getCurrentUser();
     if (!user) return;
+    try { performAutoClaim(); } catch (e) {}
     renderMyRentals();
 }
 
@@ -7855,10 +8505,10 @@ function renderMyRentals() {
 
     if (rentals.length === 0) {
         list.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">⚡</div>
-                <h3>No Bikes Yet</h3>
-                <p>You haven't purchased any packages yet.</p>
+            <div class="empty-state" style="text-align:center;padding:40px 16px;">
+                <div class="empty-icon" style="font-size:42px;margin-bottom:8px;">⚡</div>
+                <h3 style="color:var(--text-primary);">No Bikes Yet</h3>
+                <p style="color:var(--text-secondary);">You haven't purchased any packages yet.</p>
                 <button class="btn-primary btn-press animate-scale-in" onclick="showPage('propertiesPage')" style="margin-top: 12px; padding: 10px 30px; background: linear-gradient(135deg, var(--accent), #0088cc); border: none; border-radius: 10px; color: white; font-weight: 600;">
                     Browse Bikes
                 </button>
@@ -7867,64 +8517,101 @@ function renderMyRentals() {
         return;
     }
 
+    // newest first
+    rentals = rentals.slice().sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
+
     list.innerHTML = rentals.map(rental => {
         const now = new Date();
-        const nextClaim = new Date(rental.nextClaimTime || rental.lastClaimDate);
+        const nextClaim = new Date(rental.nextClaimTime || rental.lastClaimDate || rental.startDate || Date.now());
         const timeLeft = nextClaim.getTime() - now.getTime();
         const hoursLeft = Math.max(0, Math.floor(timeLeft / (1000 * 60 * 60)));
+        const minsLeft = Math.max(0, Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)));
         const isReady = timeLeft <= 0;
-        const dayCount = rental.dayCounter || 0;
-        const totalDays = rental.totalDays || 0;
-        const totalEarned = rental.totalEarned || 0;
+        let dayCount = rental.dayCounter || 0;
+        const totalDays = rental.totalDays || rental.days || 0;
+        let totalEarned = rental.totalEarned || 0;
+        const price = rental.amount || rental.price || 0;
+        const daily = rental.dailyReturn || 0;
+        const priceL = formatMoneyUGX(price, user);
+        const dailyL = formatMoneyUGX(daily, user);
+        const earnedL = formatMoneyUGX(totalEarned, user);
+        const img = rental.propertyImage || rental.image || 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/2478b72e-633c-464a-9f97-88d491602e28.png';
+        const name = rental.propertyName || 'Bike Package';
 
         if (isReady && rental.status === 'active') {
             autoClaimRental(rental);
             const updatedRental = APP_DATA.rentals.find(r => r.id === rental.id);
             if (updatedRental) {
                 rental = updatedRental;
+                dayCount = rental.dayCounter || dayCount;
+                totalEarned = rental.totalEarned || totalEarned;
             }
         }
+        // refresh converted labels after possible auto-claim
+        const priceL2 = formatMoneyUGX(price, user);
+        const dailyL2 = formatMoneyUGX(daily, user);
+        const earnedL2 = formatMoneyUGX(totalEarned, user);
 
         let statusBadge = '';
         let timerDisplay = '';
+        const progress = totalDays > 0 ? Math.min(100, Math.round((dayCount / totalDays) * 100)) : 0;
 
         if (rental.status === 'active') {
-            statusBadge = '<span style="color:#2ecc71;font-weight:600;">🟢 Active</span>';
-            timerDisplay = `<div style="font-size:12px;color:var(--text-secondary);">⏰ ${hoursLeft}h until next income</div>`;
+            statusBadge = '<span style="color:#059669;font-weight:700;font-size:11px;background:#D1FAE5;padding:3px 8px;border-radius:999px;">🟢 Active</span>';
+            if (isReady) {
+                timerDisplay = `<div style="font-size:12px;color:#059669;font-weight:600;">✅ Income credited</div>`;
+            } else {
+                timerDisplay = `<div style="font-size:12px;color:var(--text-secondary);">⏰ ${hoursLeft}h ${minsLeft}m to next income</div>`;
+            }
         } else if (rental.status === 'completed') {
-            statusBadge = `<span style="color:var(--accent);font-weight:600;">✅ Completed</span>`;
+            statusBadge = `<span style="color:#2563EB;font-weight:700;font-size:11px;background:#DBEAFE;padding:3px 8px;border-radius:999px;">✅ Completed</span>`;
             if (rental.collected) {
-                timerDisplay = `<div style="font-size:12px;color:#2ecc71;">💰 Collected</div>`;
+                timerDisplay = `<div style="font-size:12px;color:#059669;">💰 Funds collected</div>`;
             } else {
                 timerDisplay = `<button class="btn btn-sm" onclick="collectCompletedFunds('${rental.id}')" style="background: linear-gradient(135deg, var(--accent), #0088cc); border: none; border-radius: 8px; color: white; padding: 6px 16px; font-weight: 600; font-size: 12px;">💰 Collect Funds</button>`;
             }
+        } else {
+            statusBadge = `<span style="color:#64748B;font-weight:600;font-size:11px;">${rental.status || '—'}</span>`;
         }
 
         return `
-            <div style="background: #FFFFFF; border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 16px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.04);">
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width: 60px; height: 60px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: #F8FAFC;">
-                        <img src="${rental.propertyImage || 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/2478b72e-633c-464a-9f97-88d491602e28.png'}" 
-                             alt="${rental.propertyName}" 
-                             style="width:100%;height:100%;object-fit:cover;">
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight: 700; font-size: 14px; color: var(--text-primary);">⚡ ${rental.propertyName}</div>
-                        <div style="font-size: 13px; color: var(--accent); font-weight: 600;">UGX ${rental.amount.toLocaleString()}</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">📈 UGX ${rental.dailyReturn.toLocaleString()}/day</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 12px;">${statusBadge}</div>
-                        <div style="font-size: 12px; font-weight: 600; color: #f39c12;">Day ${dayCount}/${totalDays}</div>
-                    </div>
+            <div class="pkg-card" style="margin-bottom:14px;">
+                <div class="pkg-image-wrap" style="height:140px;">
+                    <img src="${img}" alt="${name}" loading="lazy"
+                         onerror="this.src='https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&h=360&fit=crop'">
+                    <span class="pkg-badge">Day ${dayCount}/${totalDays}</span>
                 </div>
-                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--bg-card); display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="font-size: 12px; color: var(--text-secondary);">💰 Earned: </span>
-                        <span style="font-size: 14px; color: #2ecc71; font-weight: 600;">UGX ${totalEarned.toLocaleString()}</span>
+                <div class="pkg-body">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+                        <div>
+                            <div class="pkg-title" style="margin-bottom:2px;"><i class="fas fa-bicycle"></i><span>${name}</span></div>
+                            <div style="font-size:12px;color:var(--text-secondary);">Purchased ${rental.startDate ? new Date(rental.startDate).toLocaleDateString() : '—'}</div>
+                        </div>
+                        ${statusBadge}
                     </div>
-                    <div>
-                        ${timerDisplay}
+                    <div class="pkg-metrics" style="margin-bottom:12px;">
+                        <div class="pkg-metric">
+                            <div class="pkg-metric-icon"><i class="fas fa-tag"></i></div>
+                            <div class="pkg-metric-val">${priceL2}</div>
+                            <div class="pkg-metric-label">Invested</div>
+                        </div>
+                        <div class="pkg-metric">
+                            <div class="pkg-metric-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="pkg-metric-val">${dailyL2}</div>
+                            <div class="pkg-metric-label">Daily</div>
+                        </div>
+                        <div class="pkg-metric">
+                            <div class="pkg-metric-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="pkg-metric-val">${earnedL2}</div>
+                            <div class="pkg-metric-label">Earned</div>
+                        </div>
+                    </div>
+                    <div style="height:8px;background:#E2E8F0;border-radius:999px;overflow:hidden;margin-bottom:10px;">
+                        <div style="height:100%;width:${progress}%;background:linear-gradient(90deg,#10B981,#059669);"></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                        <div style="font-size:12px;color:var(--text-secondary);">${progress}% complete</div>
+                        <div>${timerDisplay}</div>
                     </div>
                 </div>
             </div>
@@ -7936,17 +8623,24 @@ function renderMyRentals() {
 
 function autoClaimRental(rental) {
     const user = getCurrentUser();
-    if (!user) return;
-    
-    user.balance += rental.dailyReturn;
-    
-    rental.totalEarned = (rental.totalEarned || 0) + rental.dailyReturn;
-    rental.remainingDays -= 1;
+    if (!user || !rental || rental.status !== 'active') return;
+
+    if (rental.totalDays == null) rental.totalDays = rental.days || 0;
+    if (rental.remainingDays == null) {
+        rental.remainingDays = Math.max(0, (rental.totalDays || 0) - (rental.dayCounter || 0));
+    }
+    if (rental.amount == null && rental.price != null) rental.amount = rental.price;
+    if (!rental.propertyImage && rental.image) rental.propertyImage = rental.image;
+
+    const profit = Number(rental.dailyReturn) || 0;
+    if (profit <= 0) return;
+
+    user.balance = (user.balance || 0) + profit;
+    rental.totalEarned = (rental.totalEarned || 0) + profit;
+    rental.remainingDays = Math.max(0, (rental.remainingDays || 0) - 1);
     rental.dayCounter = (rental.dayCounter || 0) + 1;
     rental.lastClaimDate = new Date().toISOString();
-    
-    const nextClaimTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    rental.nextClaimTime = nextClaimTime.toISOString();
+    rental.nextClaimTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
     if (rental.remainingDays <= 0) {
         rental.status = 'completed';
@@ -7957,7 +8651,7 @@ function autoClaimRental(rental) {
         id: 'txn_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
         phone: user.phone,
         type: 'earning',
-        amount: rental.dailyReturn,
+        amount: profit,
         description: `⚡ Day ${rental.dayCounter} income from ${rental.propertyName}`,
         date: new Date().toISOString(),
         status: 'completed'
@@ -8023,16 +8717,85 @@ function loadReferralPage() {
     const user = getCurrentUser();
     if (!user) return;
 
+    // Ensure user has a referral code
+    if (!user.referralCode) {
+        user.referralCode = generateReferralCode(user.phone);
+        updateUserInStorage(user);
+        saveData();
+    }
+
     const code = user.referralCode || '—';
-    document.getElementById('refCode').textContent = code;
-    document.getElementById('refLink').textContent = `https://bovada-earns.onrender.com/?ref=${code}`;
+    const codeEl = document.getElementById('refCode');
+    if (codeEl) codeEl.textContent = code;
+    const linkEl = document.getElementById('refLink');
+    const origin = (typeof location !== 'undefined' && location.origin) ? location.origin : 'https://bovada-earns.top';
+    const link = `${origin}/?ref=${code}`;
+    if (linkEl) linkEl.textContent = link;
 
-    const referrals = APP_DATA.referrals.filter(r => r.referrerPhone === user.phone && r.level === 1);
-    document.getElementById('totalReferrals').textContent = referrals.length;
-    document.getElementById('withRentals').textContent = referrals.filter(r => r.hasRented === true).length;
+    // Rebuild referral records from users if missing (self-heal)
+    (APP_DATA.users || []).forEach(u => {
+        if (u.referredBy === user.phone && !u.isAdmin) {
+            const exists = (APP_DATA.referrals || []).some(r => r.referrerPhone === user.phone && r.refereePhone === u.phone);
+            if (!exists) {
+                if (!APP_DATA.referrals) APP_DATA.referrals = [];
+                const hasRented = (APP_DATA.rentals || []).some(r => r.phone === u.phone);
+                APP_DATA.referrals.push({
+                    id: 'ref_heal_' + u.phone,
+                    referrerPhone: user.phone,
+                    refereePhone: u.phone,
+                    level: 1,
+                    date: u.registrationDate || new Date().toISOString(),
+                    commission: 0,
+                    hasRented: hasRented,
+                    totalSpent: 0
+                });
+            }
+        }
+    });
 
-    const commissionTxns = APP_DATA.transactions.filter(t => t.phone === user.phone && t.type === 'referral_bonus');
-    document.getElementById('commissionEarned').textContent = commissionTxns.reduce((sum, t) => sum + t.amount, 0).toLocaleString();
+    const referrals = (APP_DATA.referrals || []).filter(r => r.referrerPhone === user.phone && (r.level === 1 || r.level == null));
+    const totalEl = document.getElementById('totalReferrals');
+    if (totalEl) totalEl.textContent = referrals.length;
+    const withEl = document.getElementById('withRentals');
+    if (withEl) withEl.textContent = referrals.filter(r => r.hasRented === true).length;
+
+    const commissionTxns = (APP_DATA.transactions || []).filter(t => t.phone === user.phone && t.type === 'referral_bonus');
+    const commEl = document.getElementById('commissionEarned');
+    if (commEl) commEl.textContent = commissionTxns.reduce((sum, t) => sum + (t.amount || 0), 0).toLocaleString();
+
+    // Team list
+    let list = document.getElementById('referralTeamList');
+    if (!list) {
+        // inject under commission section if missing
+        const page = document.getElementById('referralPage');
+        if (page) {
+            list = document.createElement('div');
+            list.id = 'referralTeamList';
+            list.style.marginTop = '14px';
+            const content = page.querySelector('.page-content') || page;
+            content.appendChild(list);
+        }
+    }
+    if (list) {
+        if (referrals.length === 0) {
+            list.innerHTML = '<div style="background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px;text-align:center;color:#64748B;font-size:13px;">No team members yet. Share your referral link!</div>';
+        } else {
+            list.innerHTML = '<div style="font-weight:700;color:#0F172A;margin-bottom:8px;">Your Team</div>' + referrals.slice().sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(r => {
+                const member = (APP_DATA.users || []).find(u => u.phone === r.refereePhone);
+                const bal = member ? (member.balance || 0) : 0;
+                return `<div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;">
+                    <div>
+                        <div style="font-weight:700;color:#0F172A;">📱 ${r.refereePhone}</div>
+                        <div style="font-size:11px;color:#64748B;margin-top:2px;">Joined ${r.date ? new Date(r.date).toLocaleDateString() : '—'} · Commission UGX ${(r.commission||0).toLocaleString()}</div>
+                    </div>
+                    <div style="text-align:right;font-size:11px;">
+                        <div style="font-weight:700;color:${r.hasRented ? '#059669' : '#F59E0B'};">${r.hasRented ? '⚡ Invested' : '⏳ Pending'}</div>
+                        <div style="color:#64748B;">Bal ${(bal).toLocaleString()}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    }
 }
 
 function copyReferralCode() {
@@ -8057,7 +8820,15 @@ function loadProfilePage() {
     setTxt('profDisplayPhone', user.phone || 'User');
     setTxt('profDisplayPhone2', '📱 ' + (user.phone || '—'));
     setTxt('profDisplayEmail', '✉️ account@bovada.earns');
-    setTxt('profBalance', (user.balance || 0).toLocaleString());
+    setTxt('profBalance', formatMoneyAmountOnly(user.balance || 0, user));
+    const profBalLabel = document.querySelector('.prof-bal-amount');
+    if (profBalLabel && !profBalLabel.dataset.curBound) {
+        // keep structure: CURRENCY <span id=profBalance>
+    }
+    const meta = getCountryMeta(getUserCountryCode(user));
+    if (profBalLabel) {
+        profBalLabel.innerHTML = meta.currency + ' <span id="profBalance">' + formatMoneyAmountOnly(user.balance || 0, user) + '</span>';
+    }
 
     const bonusTxns = (APP_DATA.transactions || []).filter(t =>
         t.phone === user.phone && (t.type === 'welcome_bonus' || t.type === 'referral_bonus')
@@ -8066,40 +8837,286 @@ function loadProfilePage() {
     setTxt('profPromo', promo.toLocaleString());
 }
 
+// ============================================
+// VIP GIFT / REDEEM CODES (one use per user)
+// ============================================
+const VIP_CODES = {
+    'UG112D': { amount: 200, label: 'VIP Bronze' },
+    'VT88W1': { amount: 300, label: 'VIP Silver' },
+    'KW3300': { amount: 500, label: 'VIP Gold' },
+    'BB338W': { amount: 900, label: 'VIP Platinum' }
+};
+
+function getVipCodeRedemptions() {
+    if (!APP_DATA.vipRedemptions) APP_DATA.vipRedemptions = [];
+    return APP_DATA.vipRedemptions;
+}
+
+function hasUserRedeemedVipCode(phone, code) {
+    const c = String(code || '').toUpperCase();
+    return getVipCodeRedemptions().some(r => r.phone === phone && String(r.code).toUpperCase() === c);
+}
+
 function redeemVoucher() {
     const input = document.getElementById('voucherCode');
     const code = (input ? input.value : '').trim().toUpperCase();
     if (!code) {
-        showToast('Enter a voucher code', 'error');
+        showToast('Enter a VIP gift code', 'error');
         return;
     }
-    // Simple demo voucher: WELCOME200 credits 200 UGX
+
     const user = getCurrentUser();
-    if (!user) return;
-    if (code === 'WELCOME200' || code === 'BONUS200') {
-        user.balance = (user.balance || 0) + 200;
-        APP_DATA.transactions.push({
-            id: 'txn_' + Date.now(),
-            phone: user.phone,
-            type: 'welcome_bonus',
-            amount: 200,
-            description: '🎁 Voucher redeemed: ' + code,
-            date: new Date().toISOString(),
-            status: 'completed'
-        });
-        updateUserInStorage(user);
-        saveData();
-        if (input) input.value = '';
-        showToast('🎉 Voucher redeemed! +200 UGX', 'success');
-        loadProfilePage();
-    } else {
-        showToast('Invalid or expired voucher code', 'error');
+    if (!user) {
+        showToast('Please login first', 'error');
+        return;
+    }
+    if (user.suspended) {
+        showToast('Account suspended', 'error');
+        return;
+    }
+
+    const vip = VIP_CODES[code];
+    if (!vip) {
+        showToast('Invalid or expired VIP code', 'error');
+        return;
+    }
+
+    if (hasUserRedeemedVipCode(user.phone, code)) {
+        showToast('You already used this code. Each code works once per user.', 'error');
+        return;
+    }
+
+    const amount = Number(vip.amount) || 0;
+    user.balance = (user.balance || 0) + amount;
+    if (!user.redeemedVipCodes) user.redeemedVipCodes = [];
+    if (!user.redeemedVipCodes.includes(code)) user.redeemedVipCodes.push(code);
+
+    getVipCodeRedemptions().push({
+        id: 'vip_' + Date.now(),
+        phone: user.phone,
+        code: code,
+        amount: amount,
+        label: vip.label,
+        date: new Date().toISOString()
+    });
+
+    APP_DATA.transactions.push({
+        id: 'txn_' + Date.now(),
+        phone: user.phone,
+        type: 'welcome_bonus',
+        amount: amount,
+        description: `🎁 VIP code ${code} (${vip.label}) +${amount.toLocaleString()} UGX`,
+        date: new Date().toISOString(),
+        status: 'completed'
+    });
+
+    updateUserInStorage(user);
+    saveData();
+    if (input) input.value = '';
+    showToast(`🎉 ${vip.label} redeemed! +${amount.toLocaleString()} UGX`, 'success');
+    loadProfilePage();
+}
+
+function renderAdminVipCodes() {
+    const list = document.getElementById('adminVipCodeList');
+    if (!list) return;
+
+    const redemptions = getVipCodeRedemptions();
+    const rows = Object.keys(VIP_CODES).map(code => {
+        const vip = VIP_CODES[code];
+        const usedBy = redemptions.filter(r => String(r.code).toUpperCase() === code);
+        const usedCount = usedBy.length;
+        const recent = usedBy.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+        const recentHtml = recent.length
+            ? recent.map(r => `<div style="font-size:11px;color:#b0b0c8;">📱 ${r.phone} · +${Number(r.amount).toLocaleString()} · ${r.date ? new Date(r.date).toLocaleString() : ''}</div>`).join('')
+            : '<div style="font-size:11px;color:#64748B;">No redemptions yet</div>';
+
+        return `
+            <div class="admin-user-item" style="flex-direction:column;align-items:stretch;gap:8px;">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <div>
+                        <div style="font-weight:800;color:#fff;letter-spacing:1px;">🎟️ ${code}</div>
+                        <div style="font-size:12px;color:#b0b0c8;margin-top:2px;">${vip.label} · Reward: <strong style="color:#2ecc71;">UGX ${vip.amount.toLocaleString()}</strong></div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:11px;color:#94A3B8;">One use per user</div>
+                        <div style="font-weight:700;color:#f39c12;">${usedCount} redemption${usedCount === 1 ? '' : 's'}</div>
+                    </div>
+                </div>
+                <div style="background:rgba(0,0,0,0.25);border-radius:8px;padding:8px 10px;">
+                    <div style="font-size:11px;font-weight:700;color:#94A3B8;margin-bottom:4px;">Recent usage</div>
+                    ${recentHtml}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    const totalPaid = redemptions.reduce((s, r) => s + (Number(r.amount) || 0), 0);
+    list.innerHTML = `
+        <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:120px;background:#0a142e;border:1px solid #1a2a4a;border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:11px;color:#94A3B8;">Active codes</div>
+                <div style="font-size:22px;font-weight:800;color:#fff;">${Object.keys(VIP_CODES).length}</div>
+            </div>
+            <div style="flex:1;min-width:120px;background:#0a142e;border:1px solid #1a2a4a;border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:11px;color:#94A3B8;">Total redemptions</div>
+                <div style="font-size:22px;font-weight:800;color:#f39c12;">${redemptions.length}</div>
+            </div>
+            <div style="flex:1;min-width:120px;background:#0a142e;border:1px solid #1a2a4a;border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:11px;color:#94A3B8;">UGX paid out</div>
+                <div style="font-size:22px;font-weight:800;color:#2ecc71;">${totalPaid.toLocaleString()}</div>
+            </div>
+        </div>
+        ${rows}
+        <div style="margin-top:12px;">
+            <div style="font-weight:700;color:#fff;margin-bottom:8px;">All redemption log</div>
+            <div id="adminVipRedemptionLog"></div>
+        </div>
+    `;
+
+    const log = document.getElementById('adminVipRedemptionLog');
+    if (log) {
+        if (!redemptions.length) {
+            log.innerHTML = '<p class="empty-text">No VIP codes redeemed yet</p>';
+        } else {
+            log.innerHTML = redemptions.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(r => `
+                <div class="admin-user-item">
+                    <div>
+                        <div style="font-weight:600;color:#fff;">${r.code} → 📱 ${r.phone}</div>
+                        <div style="font-size:11px;color:#b0b0c8;">${r.label || ''} · ${r.date ? new Date(r.date).toLocaleString() : ''}</div>
+                    </div>
+                    <div style="color:#2ecc71;font-weight:700;">+UGX ${Number(r.amount || 0).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
     }
 }
+
 
 // ============================================
 // DEPOSIT FUNCTIONS
 // ============================================
+
+
+// ============================================
+// MARZPAY MULTI-COUNTRY (UG, KE, RW, CD)
+// ============================================
+const MARZ_MARKETS = {
+    UG: {
+        name: 'Uganda',
+        currency: 'UGX',
+        dial: '256',
+        flag: '🇺🇬',
+        providers: [
+            { id: 'mtn', label: 'MTN' },
+            { id: 'airtel', label: 'Airtel' }
+        ],
+        minAmount: 10000,
+        quick: [10000, 20000, 50000, 100000, 200000],
+        // Account ledger is UGX
+        toUgx: 1,
+        phoneHint: 'Uganda MTN or Airtel number (e.g. 7XXXXXXXX)',
+        countryHint: 'MTN & Airtel Money · Currency: UGX'
+    },
+    KE: {
+        name: 'Kenya',
+        currency: 'KES',
+        dial: '254',
+        flag: '🇰🇪',
+        providers: [
+            { id: 'mpesa', label: 'M-Pesa' }
+        ],
+        minAmount: 100,
+        quick: [100, 500, 1000, 2000, 5000],
+        // Approx rate used only for UGX wallet credit display (adjust to live rate on backend)
+        toUgx: 28,
+        phoneHint: 'Kenya M-Pesa number (e.g. 7XXXXXXXX)',
+        countryHint: 'M-Pesa · Currency: KES · Credited to your UGX balance'
+    },
+    RW: {
+        name: 'Rwanda',
+        currency: 'RWF',
+        dial: '250',
+        flag: '🇷🇼',
+        providers: [
+            { id: 'mtn', label: 'MTN' },
+            { id: 'airtel', label: 'Airtel' }
+        ],
+        minAmount: 1000,
+        quick: [1000, 5000, 10000, 20000, 50000],
+        toUgx: 7,
+        phoneHint: 'Rwanda MTN or Airtel number (e.g. 7XXXXXXXX)',
+        countryHint: 'MTN & Airtel · Currency: RWF · Credited to your UGX balance'
+    },
+    CD: {
+        name: 'DRC Congo',
+        currency: 'CDF',
+        dial: '243',
+        flag: '🇨🇩',
+        providers: [
+            { id: 'vodacom', label: 'Vodacom' },
+            { id: 'airtel', label: 'Airtel' },
+            { id: 'orange', label: 'Orange' }
+        ],
+        minAmount: 5000,
+        quick: [5000, 10000, 25000, 50000, 100000],
+        toUgx: 0.4,
+        phoneHint: 'DRC Vodacom / Airtel / Orange (e.g. 8XXXXXXXX)',
+        countryHint: 'Vodacom, Airtel & Orange · Currency: CDF · Credited to your UGX balance'
+    }
+};
+
+let depositCountry = 'UG';
+let depositMethod = 'mtn';
+
+function getDepositMarket() {
+    return MARZ_MARKETS[depositCountry] || MARZ_MARKETS.UG;
+}
+
+function selectDepositCountry(code) {
+    if (!MARZ_MARKETS[code]) return;
+    depositCountry = code;
+    const market = getDepositMarket();
+
+    document.querySelectorAll('.dep-country-btn').forEach(btn => {
+        const active = btn.getAttribute('data-country') === code;
+        btn.style.borderColor = active ? '#10B981' : '#E2E8F0';
+        btn.style.background = active ? '#ECFDF5' : '#fff';
+        btn.style.color = active ? '#059669' : '#475569';
+        btn.classList.toggle('active', active);
+    });
+
+    const cur = document.getElementById('depCurrencyLabel');
+    if (cur) cur.textContent = market.currency;
+    const minL = document.getElementById('depMinLabel');
+    if (minL) minL.textContent = 'Min: ' + market.minAmount.toLocaleString() + ' ' + market.currency;
+    const hint = document.getElementById('depCountryHint');
+    if (hint) hint.textContent = market.countryHint;
+    const phoneHint = document.getElementById('depPhoneHint');
+    if (phoneHint) phoneHint.textContent = 'Enter the number that will receive the MarzPay PIN prompt. ' + market.phoneHint;
+    const prefix = document.getElementById('depPhonePrefix');
+    if (prefix) prefix.textContent = '+' + market.dial;
+
+    // Providers
+    const net = document.getElementById('depNetworkToggle');
+    if (net) {
+        net.innerHTML = market.providers.map((p, i) => {
+            const active = i === 0;
+            if (active) depositMethod = p.id;
+            return `<button type="button" id="depNet_${p.id}" onclick="selectDepositNetwork('${p.id}')" style="padding:6px 12px;border:none;border-radius:8px;background:${active ? '#64748B' : '#E2E8F0'};color:${active ? '#fff' : '#64748B'};font-size:12px;font-weight:600;cursor:pointer;">${p.label}</button>`;
+        }).join('');
+    }
+
+    // Quick amounts
+    const q = document.getElementById('depQuickAmounts');
+    if (q) {
+        q.innerHTML = market.quick.map(a =>
+            `<button type="button" onclick="setDepositAmount(${a})" style="padding:9px 16px;border:1px solid #E2E8F0;border-radius:20px;background:#FFFFFF;color:#475569;font-size:13px;font-weight:600;cursor:pointer;">${a.toLocaleString()}</button>`
+        ).join('');
+    }
+
+    updateDepositFeePreview();
+}
 
 function selectPayment(method) {
     depositMethod = method;
@@ -8108,86 +9125,75 @@ function selectPayment(method) {
 
 function selectDepositNetwork(network) {
     depositMethod = network;
-    const mtnBtn = document.getElementById('depNetMtn');
-    const airtelBtn = document.getElementById('depNetAirtel');
-    if (mtnBtn && airtelBtn) {
-        if (network === 'mtn') {
-            mtnBtn.style.background = '#64748B';
-            mtnBtn.style.color = '#fff';
-            airtelBtn.style.background = '#E2E8F0';
-            airtelBtn.style.color = '#64748B';
-        } else {
-            airtelBtn.style.background = '#64748B';
-            airtelBtn.style.color = '#fff';
-            mtnBtn.style.background = '#E2E8F0';
-            mtnBtn.style.color = '#64748B';
-        }
-    }
+    const market = getDepositMarket();
+    market.providers.forEach(p => {
+        const btn = document.getElementById('depNet_' + p.id);
+        if (!btn) return;
+        const active = p.id === network;
+        btn.style.background = active ? '#64748B' : '#E2E8F0';
+        btn.style.color = active ? '#fff' : '#64748B';
+    });
 }
 
 function setDepositAmount(amount) {
-    document.getElementById('depositAmount').value = amount;
+    const el = document.getElementById('depositAmount');
+    if (el) el.value = amount;
     updateDepositFeePreview();
 }
 
+function localAmountToUgx(amount) {
+    const market = getDepositMarket();
+    return Math.round(Number(amount || 0) * (market.toUgx || 1));
+}
+
 function updateDepositFeePreview() {
-    const amount = parseFloat(document.getElementById('depositAmount').value) || 0;
+    const amount = parseFloat((document.getElementById('depositAmount') || {}).value) || 0;
+    const market = getDepositMarket();
     const preview = document.getElementById('depositFeePreview');
-    if (amount >= 10000) {
-        const fee = Math.round(amount * 0.05);
-        const net = amount - fee;
-        document.getElementById('previewPay').textContent = 'UGX ' + amount.toLocaleString();
-        document.getElementById('previewFee').textContent = 'UGX ' + fee.toLocaleString();
-        document.getElementById('previewNet').textContent = 'UGX ' + net.toLocaleString();
+    const creditHint = document.getElementById('depUgxCreditHint');
+    const ugxGross = localAmountToUgx(amount);
+    const fee = Math.round(ugxGross * 0.05);
+    const net = Math.max(0, ugxGross - fee);
+
+    if (creditHint) {
+        creditHint.textContent = amount > 0
+            ? `Account credit ≈ UGX ${net.toLocaleString()} (after ~5% fee)`
+            : `Account credit ≈ UGX 0`;
+    }
+
+    if (!preview) return;
+    if (amount >= market.minAmount) {
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setTxt('previewPay', market.currency + ' ' + amount.toLocaleString());
+        setTxt('previewFee', 'UGX ' + fee.toLocaleString());
+        setTxt('previewNet', 'UGX ' + net.toLocaleString());
         preview.style.display = 'block';
     } else {
         preview.style.display = 'none';
     }
 }
 
-function showDepositStep1() {
-    if (window._marzPollTimer) {
-        clearInterval(window._marzPollTimer);
-        window._marzPollTimer = null;
-    }
-    const step1 = document.getElementById('depositStep1');
-    const step2 = document.getElementById('depositStep2');
-    if (step1) step1.style.display = 'block';
-    if (step2) step2.style.display = 'none';
-    ['depositError', 'depositSuccess', 'depositInfo'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-    // Restore default waiting UI (may have been replaced on success/fail)
-    const waiting = document.getElementById('depositWaiting');
-    if (waiting) {
-        waiting.style.display = 'block';
-        waiting.innerHTML = `
-            <div style="font-size:48px;margin-bottom:12px;">📲</div>
-            <h3 style="font-weight:700;font-size:18px;margin-bottom:8px;color:#0F172A;">Approve on your phone</h3>
-            <p style="font-size:14px;color:#64748B;margin-bottom:16px;">
-                Prompt sent to <strong id="waitingPhone" style="color:#059669;"></strong>. Enter your PIN to approve.
-            </p>
-            <div style="background:#F8FAFC;border-radius:12px;padding:12px 14px;margin-bottom:16px;text-align:left;">
-                <div style="display:flex;justify-content:space-between;font-size:13px;color:#64748B;padding:4px 0;"><span>Amount</span><span id="waitingAmount" style="color:#0F172A;font-weight:600;">—</span></div>
-                <div style="display:flex;justify-content:space-between;font-size:13px;color:#64748B;padding:4px 0;"><span>Status</span><span id="waitingStatus" style="color:#F59E0B;">Waiting…</span></div>
-            </div>
-            <div style="position:relative;width:48px;height:48px;margin:0 auto 16px;">
-                <div style="position:absolute;inset:0;border-radius:50%;border:3px solid transparent;border-top-color:#059669;border-right-color:#059669;animation:spin 1s linear infinite;"></div>
-            </div>
-            <button onclick="showDepositStep1()" style="width:100%;padding:14px;background:#64748B;color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer;">Cancel / Back</button>
-        `;
-    }
-    const btn = document.querySelector('#depositPage .fw-submit') || document.querySelector('#depositPage button[onclick*="initiateMarzDeposit"]');
-    if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = 'Proceed to Pay <i class="fas fa-arrow-right"></i>';
-    }
-}
+function normalizeMarzPhone(raw, countryCode) {
+    let phone = String(raw || '').trim().replace(/[\s\-]/g, '');
+    const market = MARZ_MARKETS[countryCode] || MARZ_MARKETS.UG;
+    const dial = market.dial;
 
-function cancelMarzDeposit() {
-    showDepositStep1();
-    showToast('Payment cancelled. You can try again.', 'warning');
+    if (phone.startsWith('+')) phone = phone.slice(1);
+    if (phone.startsWith('00')) phone = phone.slice(2);
+
+    // Already has country dial
+    if (phone.startsWith(dial)) return phone;
+
+    // Local formats: 07..., 01..., 7..., 8...
+    if (phone.startsWith('0') && phone.length >= 9) {
+        phone = dial + phone.slice(1);
+        return phone;
+    }
+    if (/^[1-9]\d{8,9}$/.test(phone)) {
+        phone = dial + phone;
+        return phone;
+    }
+    return phone;
 }
 
 function loadDepositPage() {
@@ -8198,11 +9204,11 @@ function loadDepositPage() {
     const amountEl = document.getElementById('depositAmount');
     if (amountEl) amountEl.value = '';
     const phoneEl = document.getElementById('depositPhone');
-    if (phoneEl) phoneEl.value = user.phone || '';
-    selectDepositNetwork('mtn');
+    if (phoneEl) phoneEl.value = '';
+    const preferred = getUserCountryCode(user);
+    selectDepositCountry(preferred);
     updateDepositFeePreview();
 }
-
 
 async function initiateMarzDeposit() {
     const user = getCurrentUser();
@@ -8215,6 +9221,7 @@ async function initiateMarzDeposit() {
         return;
     }
 
+    const market = getDepositMarket();
     const amountInput = document.getElementById('depositAmount');
     const phoneInput = document.getElementById('depositPhone');
     const errorEl = document.getElementById('depositError');
@@ -8225,36 +9232,25 @@ async function initiateMarzDeposit() {
     if (errorEl) errorEl.style.display = 'none';
 
     const amount = parseFloat(amountInput && amountInput.value);
-    let phone = ((phoneInput && phoneInput.value) || '').trim().replace(/\s/g, '');
+    let phone = normalizeMarzPhone((phoneInput && phoneInput.value) || '', depositCountry);
 
-    // Normalize Ugandan numbers to 2567XXXXXXXX where possible
-    if (phone.startsWith('07') || phone.startsWith('06')) {
-        phone = '256' + phone.slice(1);
-    } else if (phone.startsWith('+256')) {
-        phone = phone.slice(1);
-    } else if (phone.startsWith('7') && phone.length === 9) {
-        phone = '256' + phone;
-    }
-
-    if (!amount || amount < 10000) {
-        if (errorEl) {
-            errorEl.textContent = 'Minimum deposit is 10,000 UGX.';
-            errorEl.style.display = 'block';
-        } else {
-            showToast('Minimum deposit is 10,000 UGX.', 'error');
-        }
+    if (!amount || amount < market.minAmount) {
+        const msg = `Minimum deposit is ${market.minAmount.toLocaleString()} ${market.currency}.`;
+        if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+        else showToast(msg, 'error');
         return;
     }
 
-    if (!phone || phone.length < 10) {
-        if (errorEl) {
-            errorEl.textContent = 'Please enter a valid Mobile Money number (e.g. 07XXXXXXXX).';
-            errorEl.style.display = 'block';
-        } else {
-            showToast('Enter a valid Mobile Money number', 'error');
-        }
+    if (!phone || phone.length < 11) {
+        const msg = 'Please enter a valid Mobile Money number for ' + market.name + '.';
+        if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+        else showToast(msg, 'error');
         return;
     }
+
+    const ugxGross = localAmountToUgx(amount);
+    const fee = Math.round(ugxGross * 0.05);
+    const netCredit = Math.max(0, ugxGross - fee);
 
     const originalBtnHtml = btn ? btn.innerHTML : '';
     if (btn) {
@@ -8268,8 +9264,18 @@ async function initiateMarzDeposit() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 amount: amount,
-                phone: phone,
-                userPhone: user.phone
+                phone: phone.startsWith('+') ? phone : ('+' + phone),
+                phone_number: phone.startsWith('+') ? phone : ('+' + phone),
+                userPhone: user.phone,
+                country: depositCountry,
+                currency: market.currency,
+                network: depositMethod,
+                provider: depositMethod,
+                description: 'Bovada Earns deposit',
+                // UGX ledger credit expected after fee
+                ugxAmount: ugxGross,
+                netCreditUgx: netCredit,
+                feeUgx: fee
             })
         });
 
@@ -8288,14 +9294,18 @@ async function initiateMarzDeposit() {
             return;
         }
 
-        // Show waiting screen – user should receive PIN prompt on phone
+        // Prefer server-calculated net credit when provided
+        const serverNet = (data.data && (data.data.netCreditUgx != null ? data.data.netCreditUgx : data.data.netCredit));
+        const creditAmount = serverNet != null ? Number(serverNet) : netCredit;
+        const serverFee = (data.data && (data.data.feeUgx != null ? data.data.feeUgx : data.data.fee));
+
         window._currentMarzRef = data.data.reference;
-        window._currentMarzNet = data.data.netCredit;
-        window._currentMarzFee = data.data.fee;
+        window._currentMarzNet = creditAmount;
+        window._currentMarzFee = serverFee != null ? serverFee : fee;
 
         const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
         setTxt('waitingPhone', data.data.phone || phone);
-        setTxt('waitingAmount', amount.toLocaleString() + ' UGX');
+        setTxt('waitingAmount', amount.toLocaleString() + ' ' + market.currency);
         setTxt('waitingStatus', 'Waiting for PIN approval…');
         const st = document.getElementById('waitingStatus');
         if (st) st.style.color = '#F59E0B';
@@ -8316,9 +9326,12 @@ async function initiateMarzDeposit() {
             id: depositId,
             phone: user.phone,
             amount: amount,
-            netCredit: data.data.netCredit,
-            fee: data.data.fee,
-            method: 'MarzPay Mobile Money',
+            currency: market.currency,
+            country: depositCountry,
+            network: depositMethod,
+            netCredit: creditAmount,
+            fee: serverFee != null ? serverFee : fee,
+            method: 'MarzPay ' + market.name,
             senderPhone: phone,
             reference: data.data.reference,
             date: new Date().toISOString(),
@@ -8328,8 +9341,10 @@ async function initiateMarzDeposit() {
             id: depositId,
             phone: user.phone,
             amount: amount,
-            netCredit: data.data.netCredit,
-            method: 'MarzPay',
+            currency: market.currency,
+            country: depositCountry,
+            netCredit: creditAmount,
+            method: 'MarzPay ' + market.name,
             senderPhone: phone,
             reference: data.data.reference,
             requestedDate: new Date().toISOString(),
@@ -8340,16 +9355,16 @@ async function initiateMarzDeposit() {
             id: 'txn_' + Date.now(),
             phone: user.phone,
             type: 'deposit',
-            amount: data.data.netCredit,
-            description: 'Mobile Money deposit pending',
+            amount: creditAmount,
+            description: `MarzPay ${market.name} deposit pending (${amount.toLocaleString()} ${market.currency})`,
             date: new Date().toISOString(),
             status: 'pending',
             reference: data.data.reference
         });
         await saveData();
 
-        showToast('PIN prompt sent to ' + phone + '. Approve on your phone.', 'info');
-        startMarzPolling(data.data.reference, data.data.netCredit, amount, phone, depositId);
+        showToast('PIN prompt sent to ' + phone + ' (' + market.name + '). Approve on your phone.', 'info');
+        startMarzPolling(data.data.reference, creditAmount, amount, phone, depositId);
 
     } catch (err) {
         console.error('Deposit initiate error:', err);
@@ -8365,7 +9380,8 @@ async function initiateMarzDeposit() {
     }
 }
 
-function startMarzPolling(reference, netCredit, amount, phone, depositId) {
+
+function startMarzPollingfunction startMarzPolling(reference, netCredit, amount, phone, depositId) {
     if (window._marzPollTimer) clearInterval(window._marzPollTimer);
 
     let attempts = 0;
@@ -9105,6 +10121,172 @@ function sendSupportMessage() {
 // ADMIN FUNCTIONS
 // ============================================
 
+
+// ============================================
+// PRODUCT CATALOG PERSISTENCE + ADMIN EDITOR
+// ============================================
+const DEFAULT_BIKES_SNAPSHOT = JSON.stringify([
+    { id: 1, name: 'AI Starter S0', price: 15000, dailyReturn: 1500, days: 45, location: 'Kampala, Uganda', type: 'Electric Starter', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/2478b72e-633c-464a-9f97-88d491602e28.png', emoji: '🚲', rented: false, totalPayout: 67500, description: 'Entry-level AI starter bike — perfect for new investors' },
+    { id: 2, name: 'AI Cruiser X1', price: 25000, dailyReturn: 2500, days: 45, location: 'Kampala, Uganda', type: 'Electric Cruiser', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/2478b72e-633c-464a-9f97-88d491602e28.png', emoji: '🏍️', rented: false, totalPayout: 112500, description: 'AI-powered electric cruiser with smart navigation and auto-pilot' },
+    { id: 3, name: 'AI Sport S2', price: 50000, dailyReturn: 5000, days: 45, location: 'Kampala, Uganda', type: 'Electric Sport', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/95ed8ecd-46bd-4ddd-9bf9-01304cc183f4.png', emoji: '🏍️', rented: false, totalPayout: 225000, description: 'High-performance AI sport bike with adaptive suspension and AI traction control' },
+    { id: 4, name: 'AI Adventure A3', price: 100000, dailyReturn: 10000, days: 45, location: 'Kampala, Uganda', type: 'Electric Adventure', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/1eb1bb88-be8d-4b69-93ad-bffdd9c95b0b.png', emoji: '🏍️', rented: false, totalPayout: 450000, description: 'AI adventure bike with off-road capabilities and terrain-adaptive AI' },
+    { id: 5, name: 'AI Commuter C4', price: 150000, dailyReturn: 15000, days: 45, location: 'Kampala, Uganda', type: 'Electric Commuter', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/1fece580-f6b0-4dec-a227-c8c6e8d9beb3.png', emoji: '🏍️', rented: false, totalPayout: 675000, description: 'Smart AI commuter bike with traffic optimization and voice control' },
+    { id: 6, name: 'AI Performance P5', price: 250000, dailyReturn: 25000, days: 45, location: 'Kampala, Uganda', type: 'Electric Performance', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/fd0fe14e-a1b9-4dbc-9972-b7969c87d873.png', emoji: '🏍️', rented: false, totalPayout: 1125000, description: 'Ultimate AI performance bike with predictive analytics and race mode' },
+    { id: 7, name: 'AI Luxury L6', price: 500000, dailyReturn: 55000, days: 45, location: 'Kampala, Uganda', type: 'Electric Luxury', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/923cf835-de8d-4e44-bf2c-90eb4b885c47.png', emoji: '👑', rented: false, totalPayout: 2475000, description: 'AI luxury bike with autonomous driving, premium comfort, and AI concierge' },
+    { id: 8, name: 'AI Titan T7', price: 1000000, dailyReturn: 100000, days: 45, location: 'Kampala, Uganda', type: 'Electric Titan', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/e9e8e623-db0d-40ab-ab03-82d0c1cb5e6c.png', emoji: '🏯', rented: false, totalPayout: 4500000, description: 'AI titan bike with AI-powered safety systems and autonomous fleet management' },
+    { id: 9, name: 'AI Phantom P8', price: 2500000, dailyReturn: 250000, days: 45, location: 'Kampala, Uganda', type: 'Electric Phantom', image: 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/9b243543-9478-40a7-82a7-0ba83715aa6d.png', emoji: '👑', rented: false, totalPayout: 11250000, description: 'Ultimate AI phantom bike with quantum AI, holographic display, and AI Butler' }
+]);
+
+function loadProductsFromStorage() {
+    try {
+        const raw = localStorage.getItem('bike_products');
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) {
+            BIKES = parsed;
+        }
+    } catch (e) {
+        console.warn('Failed to load products', e);
+    }
+}
+
+function saveProductsToStorage() {
+    try {
+        localStorage.setItem('bike_products', JSON.stringify(BIKES));
+    } catch (e) {
+        console.warn('Failed to save products', e);
+    }
+}
+
+function renderAdminProducts() {
+    const list = document.getElementById('adminProductList');
+    if (!list) return;
+    const badge = document.getElementById('productCountBadge');
+    if (badge) badge.textContent = BIKES.length;
+
+    if (!BIKES.length) {
+        list.innerHTML = '<p class="empty-text">No products</p>';
+        return;
+    }
+
+    const sorted = BIKES.slice().sort((a, b) => (a.price || 0) - (b.price || 0));
+    list.innerHTML = sorted.map(p => {
+        const profit = (p.totalPayout || 0) - (p.price || 0);
+        return `
+            <div class="admin-user-item" style="align-items:flex-start;">
+                <div style="display:flex;gap:10px;flex:1;min-width:0;">
+                    <img src="${p.image || ''}" alt="" style="width:54px;height:54px;border-radius:10px;object-fit:cover;background:#0a142e;" onerror="this.style.display='none'" />
+                    <div style="min-width:0;">
+                        <div style="font-weight:700;color:#fff;">${p.emoji || '🏍️'} ${p.name}</div>
+                        <div style="font-size:11px;color:#b0b0c8;margin-top:2px;line-height:1.4;">
+                            Price: <strong style="color:#f39c12;">UGX ${(p.price || 0).toLocaleString()}</strong>
+                            · Daily: UGX ${(p.dailyReturn || 0).toLocaleString()}
+                            · ${p.days || 0} days
+                            · Profit: UGX ${profit.toLocaleString()}<br>
+                            ${p.type || ''} · ${p.description ? String(p.description).slice(0, 80) : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-add" onclick="adminOpenProductEditor(${p.id})" title="Edit">✏️</button>
+                    <button class="btn-delete" onclick="adminDeleteProduct(${p.id})" title="Delete">🗑️</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function adminOpenProductEditor(id) {
+    const editor = document.getElementById('adminProductEditor');
+    if (!editor) return;
+    editor.style.display = 'block';
+    const title = document.getElementById('adminProductEditorTitle');
+    const product = id != null ? BIKES.find(p => p.id === id) : null;
+    document.getElementById('prodEditId').value = product ? product.id : '';
+    document.getElementById('prodName').value = product ? product.name : '';
+    document.getElementById('prodPrice').value = product ? product.price : 15000;
+    document.getElementById('prodDaily').value = product ? product.dailyReturn : 1500;
+    document.getElementById('prodDays').value = product ? product.days : 45;
+    document.getElementById('prodType').value = product ? (product.type || '') : 'Electric Starter';
+    document.getElementById('prodImage').value = product ? (product.image || '') : '';
+    document.getElementById('prodDesc').value = product ? (product.description || '') : '';
+    if (title) title.textContent = product ? 'Edit Product' : 'Add Product';
+    editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function adminCloseProductEditor() {
+    const editor = document.getElementById('adminProductEditor');
+    if (editor) editor.style.display = 'none';
+}
+
+function adminSaveProduct() {
+    const idRaw = document.getElementById('prodEditId').value;
+    const name = (document.getElementById('prodName').value || '').trim();
+    const price = parseFloat(document.getElementById('prodPrice').value);
+    const daily = parseFloat(document.getElementById('prodDaily').value);
+    const days = parseInt(document.getElementById('prodDays').value, 10);
+    const type = (document.getElementById('prodType').value || '').trim();
+    const image = (document.getElementById('prodImage').value || '').trim();
+    const description = (document.getElementById('prodDesc').value || '').trim();
+
+    if (!name) { showToast('Enter product name', 'error'); return; }
+    if (!price || price < 1000) { showToast('Price must be at least 1,000 UGX', 'error'); return; }
+    if (isNaN(daily) || daily < 0) { showToast('Enter a valid daily return', 'error'); return; }
+    if (!days || days < 1) { showToast('Duration must be at least 1 day', 'error'); return; }
+
+    const totalPayout = daily * days;
+    if (idRaw) {
+        const id = Number(idRaw);
+        const idx = BIKES.findIndex(p => p.id === id);
+        if (idx === -1) { showToast('Product not found', 'error'); return; }
+        BIKES[idx] = {
+            ...BIKES[idx],
+            name, price, dailyReturn: daily, days, type, image, description, totalPayout
+        };
+        showToast('Product updated', 'success');
+    } else {
+        const newId = (BIKES.reduce((m, p) => Math.max(m, p.id || 0), 0) || 0) + 1;
+        BIKES.push({
+            id: newId,
+            name,
+            price,
+            dailyReturn: daily,
+            days,
+            location: 'Kampala, Uganda',
+            type: type || 'Electric',
+            image: image || 'https://i.supaimg.com/65d58457-9957-4e72-bb0e-7e4c2671641a/2478b72e-633c-464a-9f97-88d491602e28.png',
+            emoji: '🏍️',
+            rented: false,
+            totalPayout,
+            description: description || name
+        });
+        showToast('Product added', 'success');
+    }
+    saveProductsToStorage();
+    adminCloseProductEditor();
+    renderAdminProducts();
+    if (typeof loadProperties === 'function') {
+        try { loadProperties(); } catch (e) {}
+    }
+}
+
+function adminDeleteProduct(id) {
+    if (!confirm('Delete this product? Users who already bought it keep their rentals.')) return;
+    BIKES = BIKES.filter(p => p.id !== id);
+    saveProductsToStorage();
+    renderAdminProducts();
+    showToast('Product deleted', 'success');
+}
+
+function adminResetProductsDefault() {
+    if (!confirm('Reset all products to default catalog?')) return;
+    BIKES = JSON.parse(DEFAULT_BIKES_SNAPSHOT);
+    saveProductsToStorage();
+    renderAdminProducts();
+    showToast('Products reset to defaults', 'success');
+}
+
+
 function loadAdminDashboard() {
     const user = getCurrentUser();
     if (!user || !user.isAdmin || impersonatingUser) {
@@ -9141,6 +10323,8 @@ function loadAdminDashboard() {
     renderAdminSupport();
     renderAdminTransactions();
     renderAdminRentals();
+    if (typeof renderAdminProducts === "function") renderAdminProducts();
+    if (typeof renderAdminVipCodes === "function") renderAdminVipCodes();
 
     adminSwitchTab(currentAdminTab);
 }
@@ -9167,7 +10351,7 @@ function adminSwitchTab(tab) {
         t.style.color = '#b0b0c8';
     });
     const btns = document.querySelectorAll('.admin-tab');
-    const map = { 'users': 0, 'deposits': 1, 'withdrawals': 2, 'messages': 3, 'support': 4, 'transactions': 5, 'rentals': 6 };
+    const map = { 'users': 0, 'deposits': 1, 'withdrawals': 2, 'messages': 3, 'support': 4, 'transactions': 5, 'rentals': 6, 'products': 7, 'vipcodes': 8 };
     if (map[tab] !== undefined && btns[map[tab]]) {
         btns[map[tab]].style.background = 'var(--accent)';
         btns[map[tab]].style.color = 'white';
@@ -9180,6 +10364,12 @@ function adminSwitchTab(tab) {
     document.getElementById('adminSupportTab').style.display = tab === 'support' ? 'block' : 'none';
     document.getElementById('adminTransactionsTab').style.display = tab === 'transactions' ? 'block' : 'none';
     document.getElementById('adminRentalsTab').style.display = tab === 'rentals' ? 'block' : 'none';
+    const prodTab = document.getElementById('adminProductsTab');
+    if (prodTab) prodTab.style.display = tab === 'products' ? 'block' : 'none';
+    if (tab === 'products') renderAdminProducts();
+    const vipTab = document.getElementById('adminVipCodesTab');
+    if (vipTab) vipTab.style.display = tab === 'vipcodes' ? 'block' : 'none';
+    if (tab === 'vipcodes') renderAdminVipCodes();
 }
 
 function adminRefreshData() {
@@ -9191,58 +10381,274 @@ function renderAdminUsers() {
     const list = document.getElementById('adminUserList');
     if (!list) return;
 
-    const users = APP_DATA.users.filter(u => !u.isAdmin);
+    const search = ((document.getElementById('adminUserSearch') || {}).value || '').trim().toLowerCase();
+    const filter = ((document.getElementById('adminUserFilter') || {}).value || 'all');
+    const sort = ((document.getElementById('adminUserSort') || {}).value || 'newest');
+
+    let users = (APP_DATA.users || []).filter(u => !u.isAdmin);
+
+    if (search) {
+        users = users.filter(u =>
+            String(u.phone || '').toLowerCase().includes(search) ||
+            String(u.referralCode || '').toLowerCase().includes(search) ||
+            String(u.country || '').toLowerCase().includes(search) ||
+            String(u.currency || '').toLowerCase().includes(search) ||
+            String(u.referredBy || '').toLowerCase().includes(search)
+        );
+    }
+
+    users = users.filter(u => {
+        const hasApprovedDeposit = (APP_DATA.transactions || []).some(t => t.phone === u.phone && t.type === 'deposit' && t.status === 'completed');
+        const hasRental = (APP_DATA.rentals || []).some(r => r.phone === u.phone && r.status === 'active');
+        if (filter === 'active') return hasApprovedDeposit;
+        if (filter === 'rental') return hasRental;
+        if (filter === 'suspended') return !!u.suspended;
+        if (filter === 'nodeposit') return !hasApprovedDeposit;
+        return true;
+    });
+
+    users.sort((a, b) => {
+        if (sort === 'oldest') return new Date(a.registrationDate || 0) - new Date(b.registrationDate || 0);
+        if (sort === 'balance_high') return (b.balance || 0) - (a.balance || 0);
+        if (sort === 'balance_low') return (a.balance || 0) - (b.balance || 0);
+        return new Date(b.registrationDate || 0) - new Date(a.registrationDate || 0);
+    });
+
+    const allUsers = (APP_DATA.users || []).filter(u => !u.isAdmin);
+    const badge = document.getElementById('userCountBadge');
+    if (badge) badge.textContent = allUsers.length;
+
+    const statsRow = document.getElementById('adminUserStatsRow');
+    if (statsRow) {
+        const suspended = allUsers.filter(u => u.suspended).length;
+        const withRental = allUsers.filter(u => (APP_DATA.rentals || []).some(r => r.phone === u.phone && r.status === 'active')).length;
+        const totalBal = allUsers.reduce((s, u) => s + (Number(u.balance) || 0), 0);
+        statsRow.innerHTML = `
+            <div style="flex:1;min-width:100px;background:#0a142e;border:1px solid #1a2a4a;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:10px;color:#94A3B8;">Registered</div>
+                <div style="font-size:18px;font-weight:800;color:#fff;">${allUsers.length}</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#0a142e;border:1px solid #1a2a4a;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:10px;color:#94A3B8;">Invested</div>
+                <div style="font-size:18px;font-weight:800;color:#2ecc71;">${withRental}</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#0a142e;border:1px solid #1a2a4a;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:10px;color:#94A3B8;">Suspended</div>
+                <div style="font-size:18px;font-weight:800;color:#e74c3c;">${suspended}</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#0a142e;border:1px solid #1a2a4a;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:10px;color:#94A3B8;">Total balances</div>
+                <div style="font-size:16px;font-weight:800;color:#f39c12;">UGX ${totalBal.toLocaleString()}</div>
+            </div>
+        `;
+    }
 
     if (users.length === 0) {
-        list.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px 0;">No users registered</p>';
+        list.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px 0;">No users found</p>';
         return;
     }
 
     list.innerHTML = users.map(u => {
-        const hasApprovedDeposit = APP_DATA.transactions.some(t => 
+        const hasApprovedDeposit = (APP_DATA.transactions || []).some(t =>
             t.phone === u.phone && t.type === 'deposit' && t.status === 'completed'
         );
-        
-        const hasRental = APP_DATA.rentals.some(r => r.phone === u.phone && r.status === 'active');
-        
-        const isSuspended = u.suspended || false;
+        const userRentals = (APP_DATA.rentals || []).filter(r => r.phone === u.phone);
+        const activeRentals = userRentals.filter(r => r.status === 'active');
+        const isSuspended = !!u.suspended;
+        const joined = u.registrationDate ? new Date(u.registrationDate).toLocaleDateString() : '—';
+        const countryMeta = (typeof getCountryMeta === 'function') ? getCountryMeta(u.country || 'UG') : { flag: '', name: u.country || 'UG', currency: u.currency || 'UGX' };
+        const refs = (APP_DATA.referrals || []).filter(r => r.referrerPhone === u.phone).length;
+        const deposits = (APP_DATA.transactions || []).filter(t => t.phone === u.phone && t.type === 'deposit' && t.status === 'completed')
+            .reduce((s, t) => s + (Number(t.amount) || 0), 0);
+        const withdrawals = (APP_DATA.transactions || []).filter(t => t.phone === u.phone && t.type === 'withdrawal' && t.status === 'completed')
+            .reduce((s, t) => s + Math.abs(Number(t.amount) || 0), 0);
 
-        let accountStatus = '';
-        if (isSuspended) {
-            accountStatus = ' <span class="user-status suspended">🚫 Suspended</span>';
-        } else if (hasApprovedDeposit) {
-            accountStatus = ' <span class="user-status active">✅ Active</span>';
-        }
+        let accountStatus = isSuspended
+            ? ' <span class="user-status suspended">🚫 Suspended</span>'
+            : (hasApprovedDeposit ? ' <span class="user-status active">✅ Active</span>' : ' <span style="color:#f39c12;font-size:11px;">⏳ New</span>');
+
+        const rentalNames = activeRentals.map(r => r.propertyName || 'Bike').slice(0, 2).join(', ');
 
         return `
-            <div class="admin-user-item ${isSuspended ? 'user-suspended' : ''}">
-                <div>
-                    <div class="user-phone">📱 ${u.phone}</div>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-                        VIP ${u.vipLevel || 1} • Active Rentals: ${u.activeRentals || 0} • Balance: UGX ${(u.balance || 0).toLocaleString()}
-                        ${hasApprovedDeposit ? ' ✅' : ' 🔴 No Deposit'}
-                        ${hasRental ? ' ⚡' : ' 📭 No Rental'}
-                        ${accountStatus}
-                        ${isSuspended ? ` <span style="font-size:10px;color:#ff4757;">Reason: ${u.suspensionReason || 'Violation of terms'}</span>` : ''}
+            <div class="admin-user-item ${isSuspended ? 'user-suspended' : ''}" style="flex-wrap:wrap;">
+                <div style="flex:1;min-width:0;cursor:pointer;" onclick="adminViewUserDetail('${u.phone}')">
+                    <div class="user-phone">📱 ${u.phone}${accountStatus}</div>
+                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.5;">
+                        ${countryMeta.flag || ''} ${countryMeta.name || ''} · ${countryMeta.currency || u.currency || 'UGX'}
+                        · Joined ${joined}<br>
+                        Balance: <strong style="color:#2ecc71;">UGX ${(u.balance || 0).toLocaleString()}</strong>
+                        · Deposits: UGX ${deposits.toLocaleString()}
+                        · Withdrawals: UGX ${withdrawals.toLocaleString()}<br>
+                        Rentals: ${activeRentals.length} active / ${userRentals.length} total
+                        ${rentalNames ? ` · ⚡ ${rentalNames}` : ''}
+                        · Team: ${refs}
+                        · Ref: ${u.referralCode || '—'}
+                        ${u.referredBy ? `<br>Referred by: ${u.referredBy}` : ''}
+                        ${isSuspended ? `<br><span style="color:#ff4757;">Reason: ${u.suspensionReason || 'Violation of terms'}</span>` : ''}
                     </div>
                 </div>
                 <div class="user-actions">
-                    <button class="btn-add" onclick="adminAddBalanceToUser('${u.phone}')" title="Add Balance">➕</button>
-                    <button class="btn-reset" onclick="adminResetPassword('${u.phone}')" title="Reset Password">🔑</button>
-                    <button class="btn-reply" onclick="adminReplyToUser('${u.phone}')" title="Private Reply">💬</button>
-                    <button class="btn-impersonate" onclick="adminImpersonateUser('${u.phone}')" title="Login as User">👤</button>
-                    ${isSuspended ? 
-                        `<button class="btn-unsuspend" onclick="adminUnsuspendUser('${u.phone}')" title="Unsuspend User">✅</button>` : 
-                        `<button class="btn-suspend" onclick="adminSuspendUser('${u.phone}')" title="Suspend User">🚫</button>`
-                    }
-                    <button class="btn-delete" onclick="adminDeleteUser('${u.phone}')" title="Delete User">🗑️</button>
+                    <button class="btn-add" onclick="event.stopPropagation();adminViewUserDetail('${u.phone}')" title="Full details" style="background:#3b82f6;">👁️</button>
+                    <button class="btn-add" onclick="event.stopPropagation();adminAddBalanceToUser('${u.phone}')" title="Add Balance">➕</button>
+                    <button class="btn-reset" onclick="event.stopPropagation();adminDeductBalanceFromUser('${u.phone}')" title="Deduct Balance" style="background:#f59e0b;">➖</button>
+                    <button class="btn-reset" onclick="event.stopPropagation();adminResetPassword('${u.phone}')" title="Reset Password">🔑</button>
+                    <button class="btn-reply" onclick="event.stopPropagation();adminReplyToUser('${u.phone}')" title="Message">💬</button>
+                    <button class="btn-impersonate" onclick="event.stopPropagation();adminImpersonateUser('${u.phone}')" title="Login as user">👤</button>
+                    ${isSuspended
+                        ? `<button class="btn-unsuspend" onclick="event.stopPropagation();adminUnsuspendUser('${u.phone}')" title="Unsuspend">✅</button>`
+                        : `<button class="btn-suspend" onclick="event.stopPropagation();adminSuspendUser('${u.phone}')" title="Suspend">🚫</button>`}
+                    <button class="btn-delete" onclick="event.stopPropagation();adminDeleteUser('${u.phone}')" title="Delete">🗑️</button>
                 </div>
             </div>
         `;
     }).join('');
 }
 
-function adminCheckUserExists(phone) {
+function adminCloseUserDetail() {
+    const panel = document.getElementById('adminUserDetailPanel');
+    if (panel) {
+        panel.style.display = 'none';
+        panel.innerHTML = '';
+    }
+}
+
+function adminViewUserDetail(phone) {
+    const u = (APP_DATA.users || []).find(x => x.phone === phone);
+    if (!u) { showToast('User not found', 'error'); return; }
+
+    const panel = document.getElementById('adminUserDetailPanel');
+    if (!panel) {
+        // fallback alert
+        alert('User: ' + phone + '\\nBalance: ' + (u.balance || 0));
+        return;
+    }
+
+    const rentals = (APP_DATA.rentals || []).filter(r => r.phone === phone).sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
+    const txns = (APP_DATA.transactions || []).filter(t => t.phone === phone).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    const refs = (APP_DATA.referrals || []).filter(r => r.referrerPhone === phone);
+    const deposits = txns.filter(t => t.type === 'deposit' && t.status === 'completed');
+    const withdrawals = txns.filter(t => t.type === 'withdrawal');
+    const earnings = txns.filter(t => ['earning', 'referral_bonus', 'welcome_bonus'].includes(t.type));
+    const depSum = deposits.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+    const wdSum = withdrawals.filter(t => t.status === 'completed').reduce((s, t) => s + Math.abs(Number(t.amount) || 0), 0);
+    const earnSum = earnings.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+    const countryMeta = (typeof getCountryMeta === 'function') ? getCountryMeta(u.country || 'UG') : { flag: '', name: u.country || 'UG', currency: 'UGX' };
+    const vipCodes = (APP_DATA.vipRedemptions || []).filter(r => r.phone === phone);
+
+    const rentalHtml = rentals.length ? rentals.map(r => `
+        <div style="background:#0a142e;border:1px solid #1a2a4a;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px;">
+            <strong style="color:#fff;">⚡ ${r.propertyName || 'Bike'}</strong>
+            <span style="color:${r.status === 'active' ? '#2ecc71' : '#94A3B8'};"> · ${r.status}</span><br>
+            <span style="color:#b0b0c8;">Invested UGX ${Number(r.amount || r.price || 0).toLocaleString()}
+            · Daily UGX ${Number(r.dailyReturn || 0).toLocaleString()}
+            · Day ${r.dayCounter || 0}/${r.totalDays || r.days || 0}
+            · Earned UGX ${Number(r.totalEarned || 0).toLocaleString()}</span><br>
+            <span style="color:#64748B;">Started ${r.startDate ? new Date(r.startDate).toLocaleString() : '—'}</span>
+        </div>
+    `).join('') : '<div style="color:#64748B;font-size:12px;">No investments yet</div>';
+
+    const txnHtml = txns.length ? txns.slice(0, 25).map(t => {
+        const pos = ['deposit', 'earning', 'referral_bonus', 'welcome_bonus'].includes(t.type);
+        return `<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #1a2a4a;font-size:11px;">
+            <div style="min-width:0;">
+                <div style="color:#e2e8f0;">${t.description || t.type}</div>
+                <div style="color:#64748B;">${t.type} · ${t.status || ''} · ${t.date ? new Date(t.date).toLocaleString() : ''}</div>
+            </div>
+            <div style="color:${pos ? '#2ecc71' : '#e74c3c'};font-weight:700;white-space:nowrap;">${pos ? '+' : '-'}UGX ${Math.abs(Number(t.amount) || 0).toLocaleString()}</div>
+        </div>`;
+    }).join('') : '<div style="color:#64748B;font-size:12px;">No transactions</div>';
+
+    const teamHtml = refs.length ? refs.map(r => `
+        <div style="font-size:12px;color:#b0b0c8;padding:4px 0;">📱 ${r.refereePhone} · ${r.hasRented ? '⚡ invested' : 'pending'} · commission UGX ${Number(r.commission || 0).toLocaleString()}</div>
+    `).join('') : '<div style="color:#64748B;font-size:12px;">No referrals</div>';
+
+    panel.style.display = 'block';
+    panel.innerHTML = `
+        <div style="background:linear-gradient(180deg,#0f1a32,#0a142e);border:1px solid #1a2a4a;border-radius:14px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;">
+                <div>
+                    <div style="font-size:18px;font-weight:800;color:#fff;">📱 ${u.phone}</div>
+                    <div style="font-size:12px;color:#94A3B8;margin-top:2px;">${countryMeta.flag || ''} ${countryMeta.name || ''} · ${u.currency || countryMeta.currency || 'UGX'} · VIP ${u.vipLevel || 1}</div>
+                </div>
+                <button onclick="adminCloseUserDetail()" style="background:#1a2a4a;border:none;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;">✕ Close</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                <div style="background:#12122a;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#94A3B8;">Balance</div><div style="font-weight:800;color:#2ecc71;">UGX ${(u.balance || 0).toLocaleString()}</div></div>
+                <div style="background:#12122a;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#94A3B8;">Total deposits</div><div style="font-weight:800;color:#3498db;">UGX ${depSum.toLocaleString()}</div></div>
+                <div style="background:#12122a;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#94A3B8;">Total withdrawn</div><div style="font-weight:800;color:#e74c3c;">UGX ${wdSum.toLocaleString()}</div></div>
+                <div style="background:#12122a;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#94A3B8;">Earnings / bonuses</div><div style="font-weight:800;color:#f39c12;">UGX ${earnSum.toLocaleString()}</div></div>
+            </div>
+
+            <div style="font-size:12px;color:#b0b0c8;line-height:1.55;margin-bottom:12px;">
+                <div>Referral code: <strong style="color:#fff;">${u.referralCode || '—'}</strong></div>
+                <div>Referred by: <strong style="color:#fff;">${u.referredBy || 'None'}</strong></div>
+                <div>Registered: ${u.registrationDate ? new Date(u.registrationDate).toLocaleString() : '—'}</div>
+                <div>Status: ${u.suspended ? '<span style="color:#e74c3c;">SUSPENDED — ' + (u.suspensionReason || '') + '</span>' : '<span style="color:#2ecc71;">Active</span>'}</div>
+                <div>Password: <strong style="color:#fff;">${u.password || '—'}</strong> <button onclick="adminResetPassword('${u.phone}')" style="margin-left:6px;font-size:10px;padding:2px 8px;border-radius:6px;border:none;background:#64748B;color:#fff;cursor:pointer;">Reset</button></div>
+                <div>VIP codes used: ${vipCodes.length ? vipCodes.map(c => c.code).join(', ') : 'None'}</div>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+                <button onclick="adminAddBalanceToUser('${u.phone}')" style="padding:8px 12px;border:none;border-radius:8px;background:#28a745;color:#fff;font-weight:700;cursor:pointer;font-size:12px;">➕ Add balance</button>
+                <button onclick="adminDeductBalanceFromUser('${u.phone}')" style="padding:8px 12px;border:none;border-radius:8px;background:#f59e0b;color:#fff;font-weight:700;cursor:pointer;font-size:12px;">➖ Deduct</button>
+                <button onclick="adminImpersonateUser('${u.phone}')" style="padding:8px 12px;border:none;border-radius:8px;background:#6366f1;color:#fff;font-weight:700;cursor:pointer;font-size:12px;">👤 Login as</button>
+                <button onclick="adminReplyToUser('${u.phone}')" style="padding:8px 12px;border:none;border-radius:8px;background:#17a2b8;color:#fff;font-weight:700;cursor:pointer;font-size:12px;">💬 Message</button>
+                ${u.suspended
+                    ? `<button onclick="adminUnsuspendUser('${u.phone}')" style="padding:8px 12px;border:none;border-radius:8px;background:#22c55e;color:#fff;font-weight:700;cursor:pointer;font-size:12px;">Unsuspend</button>`
+                    : `<button onclick="adminSuspendUser('${u.phone}')" style="padding:8px 12px;border:none;border-radius:8px;background:#ef4444;color:#fff;font-weight:700;cursor:pointer;font-size:12px;">Suspend</button>`}
+                <button onclick="adminDeleteUser('${u.phone}')" style="padding:8px 12px;border:none;border-radius:8px;background:#7f1d1d;color:#fff;font-weight:700;cursor:pointer;font-size:12px;">Delete</button>
+            </div>
+
+            <div style="margin-bottom:12px;">
+                <div style="font-weight:700;color:#fff;margin-bottom:6px;">Investments (${rentals.length})</div>
+                ${rentalHtml}
+            </div>
+            <div style="margin-bottom:12px;">
+                <div style="font-weight:700;color:#fff;margin-bottom:6px;">Referral team (${refs.length})</div>
+                ${teamHtml}
+            </div>
+            <div>
+                <div style="font-weight:700;color:#fff;margin-bottom:6px;">Transactions (latest ${Math.min(25, txns.length)} of ${txns.length})</div>
+                <div style="max-height:260px;overflow-y:auto;">${txnHtml}</div>
+            </div>
+        </div>
+    `;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function adminDeductBalanceFromUser(phone) {
+    const user = (APP_DATA.users || []).find(u => u.phone === phone);
+    if (!user) { showToast('User not found', 'error'); return; }
+    if (user.isAdmin) { showToast('Cannot edit admin balance this way', 'error'); return; }
+
+    const raw = prompt(`Deduct balance from ${phone}\\nCurrent: UGX ${(user.balance || 0).toLocaleString()}\\n\\nEnter amount to deduct (UGX):`, '1000');
+    if (raw === null) return;
+    const amount = parseFloat(raw);
+    if (!amount || amount <= 0) { showToast('Invalid amount', 'error'); return; }
+    if (amount > (user.balance || 0)) {
+        if (!confirm('Amount is greater than balance. Set balance to 0?')) return;
+        user.balance = 0;
+    } else {
+        user.balance = (user.balance || 0) - amount;
+    }
+    APP_DATA.transactions.push({
+        id: 'txn_' + Date.now(),
+        phone: user.phone,
+        type: 'withdrawal',
+        amount: amount,
+        description: `Admin deducted UGX ${amount.toLocaleString()}`,
+        date: new Date().toISOString(),
+        status: 'completed'
+    });
+    updateUserInStorage(user);
+    await saveData();
+    showToast('Balance updated', 'success');
+    renderAdminUsers();
+    adminViewUserDetail(phone);
+}
+
+function adminCheckUserExists(phone)function adminCheckUserExists(phone) {
     const checkEl = document.getElementById('adminUserCheck');
     if (!phone || phone.length < 5) {
         if (checkEl) {
@@ -10080,7 +11486,7 @@ function renderAdminRentals() {
                 <div style="font-size:11px; color:#ffc107;">Day ${r.dayCounter || 0}/${r.totalDays || 0}</div>
             </div>
             <div>
-                <div style="color:#ffc107; font-weight:600;">UGX ${r.amount.toLocaleString()}</div>
+                <div style="color:#ffc107; font-weight:600;">UGX ${Number(r.amount || r.price || 0).toLocaleString()}</div>
                 <div style="font-size:11px; color:var(--text-muted);">${r.remainingDays} days left</div>
                 ${r.status === 'completed' && !r.collected ? '<div style="color:#28a745;font-size:11px;">💰 Ready to collect</div>' : ''}
             </div>
@@ -10109,8 +11515,8 @@ function initSlideshow() {
                      onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22%3E%3Crect width=%22400%22 height=%22200%22 fill=%22%231a2a4a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%236c6c8a%22 font-size=%2230%22%3E${p.emoji}%3C/text%3E%3C/svg%3E'">
                 <div class="slide-overlay">
                     <div class="slide-name">⚡ ${p.name}</div>
-                    <div class="slide-price">UGX ${p.price.toLocaleString()}</div>
-                    <div class="slide-return">📈 UGX ${p.dailyReturn.toLocaleString()}/day • ${p.days} days</div>
+                    <div class="slide-price">${priceL}</div>
+                    <div class="slide-return">📈 ${dailyL}/day • ${p.days} days</div>
                 </div>
             </div>
         `;
@@ -10303,6 +11709,7 @@ function stopLiveActivityFeed() {
 async function initData() {
     try {
         console.log('🚀 Initializing Bovada Earns...');
+        try { startExchangeRateRefresh(); } catch (e) { console.warn('FX init', e); }
 
         loadFromLocalStorage();
         console.log('📦 Local data loaded');
